@@ -71,9 +71,10 @@ $(document).ready ->
   collect = (a, idxs) ->
     _.map(idxs, (i) -> a[i-1])
 
-  String.prototype.to_idx_table = () -> _.without(this.split(' '), "")
+  String.prototype.to_vector = () -> _.without(this.split(' '), "")
 
   Array.prototype.print = () -> this.join('')
+  Array.prototype.peek = () -> this[this.length - 1]
 
   # Shifts the elements of the array left `i` times. `i` elements at the
   # beginning of the array are placed at the end.
@@ -107,7 +108,7 @@ $(document).ready ->
                63  55  47  39  31  23  15
                 7  62  54  46  38  30  22
                14   6  61  53  45  37  29
-               21  13   5  28  20  12   4".to_idx_table()
+               21  13   5  28  20  12   4".to_vector()
 
       collect(a, table)
 
@@ -118,10 +119,21 @@ $(document).ready ->
     # Split permuted key into two halves.
     c = []
     d = []
+
     c.push k_prime.slice(0, 28)
     d.push k_prime.slice(28)
-    log "c0: #{c[0].print()}"
-    log "d0: #{d[0].print()}"
+
+    shift_schedule = "1122222212222221".to_vector()
+    log "shift schedule: #{shift_schedule}"
+
+    _.each(shift_schedule, (shift) ->
+      c.push c.peek().left_shift(shift)
+      d.push d.peek().left_shift(shift)
+    )
+
+    log c
+    _.each(c, (ci, i) -> log "c#{i}: #{ci.print()}")
+    _.each(d, (di, i) -> log "d#{i}: #{di.print()}")
 
 
 
@@ -180,3 +192,4 @@ $(document).ready ->
       $("#error").fadeOut(500, () -> $(this).text(val))
       $("#ciphertext").text des(k, p)
 
+  $("#plaintext, #key").keydown (e) -> $("#encipher").click() if e.keyCode == 13
