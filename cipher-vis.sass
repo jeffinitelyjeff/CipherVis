@@ -4,6 +4,8 @@ $two: #CDB380
 $three: #036564
 $four: #033649
 $five: #031634
+$width: 600px
+$min-height: 500px
 
 @mixin four-shadow($x, $y, $b, $c)
 	$y2: -$y
@@ -21,12 +23,12 @@ body
 	font-family: 'Ubuntu', sans-serif
 	background-color: $four
 	color: $five
-	width: 500px
+	width: $width
 	margin: 0 auto
 
 #box
-	width: 500px
-	min-height: 500px
+	width: $width
+	min-height: $min-height
 	background-color: $one
 	border: 20px solid $three
 	border-top: none

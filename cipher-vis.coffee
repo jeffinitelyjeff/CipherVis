@@ -2,7 +2,7 @@ root = exports ? this
 
 $(document).ready ->
 
-  log = console.log
+  log = (x) -> console.log(x)
 
   # Determine if all characters in `str` are hex.
   all_hex = (str) ->
@@ -22,7 +22,6 @@ $(document).ready ->
   xor = (bs1, bs2) ->
     console.log("XORING STRINGS OF DIFFERENT LENGTHS") unless bs1.length == bs2.length
     _.map( _.zip(bs1.split(''), bs2.split('')), (x) -> x[0] ^ x[1]).join('')
-  root.xor = xor
 
   # DES implementation.
   des = (k, p) ->
