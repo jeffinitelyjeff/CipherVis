@@ -1,0 +1,52 @@
+\documentclass[11pt,letterpaper]{article}
+\usepackage{fullpage}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\usepackage{listings}
+\usepackage{fancyhdr}
+\usepackage{algorithmic}
+\usepackage{framed}
+\usepackage{bussproofs}
+\usepackage{hyperref}
+
+\newcommand{\code}{\texttt}
+\newcommand{\ul}{\underline}
+\renewcommand{\bf}{\textbf}
+\newenvironment{ans}{\begin{framed}\sffamily}{\end{framed}}
+\renewcommand{\labelenumi}{Problem \arabic{enumi}. \\}
+\renewcommand{\labelenumii}{(\alph{enumii})}
+\newenvironment{textbookref}[1]{\begin{minipage}{\textwidth}\begin{framed}\begin{description}\item[#1]}{\end{description}\end{framed}\end{minipage}}
+\newcommand{\ra}{\rightarrow}
+\newcommand{\rr}{\mathbb{R}}
+\newcommand{\qq}{\mathbb{Q}}
+\newcommand{\nn}{\mathbb{N}}
+\newcommand{\zz}{\mathbb{Z}}
+\newcommand{\mypart}[1]{\part*{\vspace*{1mm}#1}}
+\newcommand{\mysection}[1]{\section*{\vspace*{1mm}#1}}
+\newcommand{\map}[2]{\texttt{#1 => #2}}
+
+\title{CipherVis}
+\date{\today}
+\author{Jeff Ruberg}
+
+\begin{document}
+
+\maketitle
+
+\section{Abstract}
+
+In this programming project, I will create both implementations and
+illustrations of various symmetric-key block ciphers; the project will be
+written in CoffeeScript (a Ruby/Python-like flavor of Javascript which compiles
+to Javascript) and will run in a web browser. I will attempt to implement and
+illustrate AES, Blowfish, DES, Triple DES, Serpent, and Twofish; I will
+implement all 6 of these, but will likely only be able to illustrate a subset
+(definitely containing AES and DES) depending on the difficultiy of the task. I
+will refer to official documentation and released implementations to test the
+correctness of my implementations. The goal for both the implementation and
+illustrations will be to be informative; the implementation will be heavily
+documented and annotated source code will be easily available online.
+
+\end{document}

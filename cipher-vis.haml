@@ -1,0 +1,37 @@
+%html
+	%head
+		%title Cipher Vis - Block Cipher Visualizations
+		%script{:type => 'text/javascript',
+					:src => 'http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js'}
+		%script{:type => 'text/javascript'} if (typeof jQuery == 'undefined') { document.write(unescape("%3script src='jquery-1.7.1.min.js' type='text/javascript'%3E%3C/script%3E"));
+		%script{:type => 'text/javascript', :src => 'underscore.js'}
+		%script{:type => 'text/javascript', :src => 'cipher-vis.js'}
+		%link{:type => 'text/css', :rel => 'stylesheet', :href => 'http://fonts.googleapis.com/css?family=Ubuntu|Droid+Sans+Mono|Amaranth:700,400'}
+		%link{:type => 'text/css', :rel => 'stylesheet', :href => 'cipher-vis.css'}
+
+	%body
+		#box
+			%h1 Cipher Viz
+			%h2 Block cipher visualizations
+			%form
+				.row
+					%label#key-label{:for => 'key'} Key
+					%input#key{:type => 'text', :value => ''}
+				.row
+					%label#plaintext-label{:for => 'plaintext'} Plaintext
+					%input#plaintext{:type => 'text', :value => ''}
+				.row
+					#encipher
+						%span.darr &darr;
+						%span.darr.hidden &darr;
+						%span.darr &darr;
+						%span.darr.hidden &darr;
+						%span.darr &darr;
+						%span.darr.hidden &darr;
+						%span.darr &darr;
+						%span.darr.hidden &darr;
+						%span.darr &darr;
+				.row
+					%span#ciphertext-label Ciphertext
+					%span#ciphertext
+
