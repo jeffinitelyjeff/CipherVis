@@ -68,7 +68,8 @@ $(document).ready ->
     val = validate(k, p)
 
     if val
-      $("#error").text val
+      $("#error").text(val).fadeIn(500)
     else
+      $("#error").fadeOut(500, () -> $(this).text(val))
       $("#ciphertext").text des(k, p)
 
