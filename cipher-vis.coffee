@@ -75,8 +75,10 @@ $(document).ready ->
 
   Array.prototype.print = () -> this.join('')
 
-  Array.prototype.left_shift = () ->
-    ...
+  # Shifts the elements of the array left `i` times. `i` elements at the
+  # beginning of the array are placed at the end.
+  Array.prototype.left_shift = (i) ->
+    this.slice(i).concat(this.slice(0, i))
 
 
   ## DES
@@ -114,10 +116,13 @@ $(document).ready ->
     log "k': #{k_prime.print()}"
 
     # Split permuted key into two halves.
-    c0 = k_prime.slice(0, 28)
-    c1 = k_prime.slice(28)
-    log "c0: #{c0.print()}"
-    log "c1: #{c1.print()}"
+    c = []
+    d = []
+    c.push k_prime.slice(0, 28)
+    d.push k_prime.slice(28)
+    log "c0: #{c[0].print()}"
+    log "d0: #{d[0].print()}"
+
 
 
 
