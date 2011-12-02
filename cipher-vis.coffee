@@ -4,7 +4,7 @@ $(document).ready ->
 
   ## Settings
 
-  DEBUG = false
+  DEBUG = true
 
   ## Misc. Utilities
 
@@ -193,3 +193,7 @@ $(document).ready ->
       $("#ciphertext").text des(k, p)
 
   $("#plaintext, #key").keydown (e) -> $("#encipher").click() if e.keyCode == 13
+
+  if DEBUG
+    $("#key").val("596F7572206C6970")
+    $("#plaintext").val("732061726520736D")
