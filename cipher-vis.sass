@@ -4,7 +4,7 @@ $two: #CDB380
 $three: #036564
 $four: #033649
 $five: #031634
-$width: 650px
+$width: 600px
 $min-height: 500px
 
 @mixin four-shadow($x, $y, $b, $c)
@@ -73,7 +73,7 @@ h2
 			size: 20px
 
 	#key, #plaintext
-		width: 397px
+		width: 295px
 		height: 42px
 
 		@include inner-shadow(2px, $one)
@@ -83,34 +83,31 @@ h2
 			@include inner-shadow(1px, $three)
 
 	#ciphertext
-		width: 385px
+		width: 283px
 		height: 30px
 
 	#key-label, #plaintext-label, #ciphertext-label, #error
 		font-size: 20px
 		position: absolute
-		right: 412px
+		right: 310px
 		top: 50%
-		margin-top: -14px
+		margin-top: -12px
 
 	#error
 		color: #DD4433
 		font-style: italic
-		text-align: right
-		display: none
 
 	#encipher
-		width: 397px
+		width: 295px
 		padding: 0
 		position: absolute
 		right: 0
-		text-align: center
 
 		cursor: pointer
 
 		.darr
 			font-size: 35px
-			margin-left: 19px
+			margin-left: 7px
 			color: $four
 
 			&:first-child

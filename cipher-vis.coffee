@@ -187,9 +187,8 @@ $(document).ready ->
     val = validate(k, p)
 
     if val
-      $("#error").text(val).fadeIn(500)
+      $("#error").text val
     else
-      $("#error").fadeOut(500, () -> $(this).text(val))
       $("#ciphertext").text des(k, p)
 
   $("#plaintext, #key").keydown (e) -> $("#encipher").click() if e.keyCode == 13
