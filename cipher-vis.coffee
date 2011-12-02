@@ -137,7 +137,6 @@ des = (hs_k, hs_p) ->
         19  13  30  6
         22  11  4   25"
 
-
   permutations = {}
   _.each(permutation_tables, (v, k) ->
     permutations[k] = (a) -> collect(a, v.to_vector())
@@ -168,9 +167,11 @@ des = (hs_k, hs_p) ->
   c.push k_prime.slice(0, 28)
   d.push k_prime.slice(28)
 
+  # We will left-shift the key-halves by these increments.
   shift_schedule = "1122222212222221".to_vector('')
   log "shift schedule: #{shift_schedule.print()}"
 
+  # Produce intermediary half-keys according to the shift schedule.
   _.each(shift_schedule, (shift) ->
     c.push c.peek().left_shift(shift)
     d.push d.peek().left_shift(shift)
@@ -178,6 +179,10 @@ des = (hs_k, hs_p) ->
 
   _.each(c, (ci, i) -> log "c#{i}: #{ci.print()}")
   _.each(d, (di, i) -> log "d#{i}: #{di.print()}")
+
+  ks = _.map(_.zip(c, d), (cd) -> permutations.pc2(cd[0].concat(cd[1])))
+
+  _.each(ks, (ki, i) -> log "k#{i}: #{ki.print()}")
 
 
 
