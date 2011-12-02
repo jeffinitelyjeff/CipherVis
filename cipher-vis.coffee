@@ -71,6 +71,14 @@ Array.prototype.print = () -> this.join('')
 Array.prototype.peek = () -> this[this.length - 1]
 Array.prototype.to_int = () -> _.map(this, (x) -> parseInt(x))
 
+Array.prototype.split_into_parts = (n) ->
+  m = this.length / n
+  splits = []
+  _.times(n, (i) ->
+    splits.push this.slice(n*i, (n+1)*i)
+  )
+  splits
+
 # Shifts the elements of the array left `i` times. `i` elements at the
 # beginning of the array are placed at the end.
 Array.prototype.left_shift = (i) ->
@@ -80,6 +88,10 @@ Array.prototype.left_shift = (i) ->
 ## DES
 
 des = (hs_k, hs_p) ->
+
+  ### Helper stuff ###
+
+  #### Permutation tables ####
 
   permutation_tables =
     # Permuted choice 1 (PC-1). 64 bits -> 56 bits.
@@ -142,6 +154,78 @@ des = (hs_k, hs_p) ->
     permutations[k] = (a) -> collect(a, v.to_vector())
   )
 
+  #### Feistel function ####
+
+  f = (rn1, kn) ->
+
+    ##### Substition (S) boxes #####
+
+    s_boxes = ["14 4  13 1  2  15 11 8  3  10 6  12 5  9  0  7
+                0  15 7  4  14 2  13 1  10 6  12 11 9  5  3  8
+                4  1  14 8  13 6  2  11 15 12 9  7  3  1  5  0
+                15 12 8  2  4  9  1  7  5  11 3  14 10 0  6  13".to_vector(),
+
+               "15 1  8  14 6  11 3  4  9  7  2  13 12 0  5  10
+                3  13 4  7  15 2  8  14 12 0  1  10 6  9  11 5
+                0  14 7  11 10 4  13 1  5  8  12 6  9  3  2  15
+                13 8  10 1  3  15 4  2  11 6  7  12 0  5  14 9".to_vector(),
+
+               "10 0  9  14 6  3  15 5  1  13 12 7  11 4  2  8
+                13 7  0  9  3  4  6  10 2  8  5  14 12 11 15 1
+                13 6  4  9  8  15 3  0  11 1  2  12 5  10 14 7
+                1 10  13 0  6  9  8  7  4  15 14 3  11 5  2  12".to_vector(),
+
+               "7  13 14 3  0  6  9  10 1  2  8  5  11 12 4  15
+                13 8  11 5  6  15 0  3  4  7  2  12 1  10 14 9
+                10 6  9  0  12 11 7  13 15 1  3  14 5  2  8  4
+                3  15 0  6  10 1  13 8  9  4  5  11 12 7  2 14".to_vector(),
+
+               "2 12   4  1   7 10  11  6   8  5   3 15  13  0  14  9
+               14 11   2 12   4  7  13  1   5  0  15 10   3  9   8  6
+      4  2   1 11  10 13   7  8  15  9  12  5   6  3   0 14
+     11  8  12  7   1 14   2 13   6 15   0  9  10  4   5  3".to_vector(),
+
+     "12  1  10 15   9  2   6  8   0 13   3  4  14  7   5 11
+     10 15   4  2   7 12   9  5   6  1  13 14   0 11   3  8
+      9 14  15  5   2  8  12  3   7  0   4 10   1 13  11  6
+      4  3   2 12   9  5  15 10  11 14   1  7   6  0   8 13".to_vector(),
+
+      "4 11   2 14  15  0   8 13   3 12   9  7   5 10   6  1
+     13  0  11  7   4  9   1 10  14  3   5 12   2 15   8  6
+      1  4  11 13  12  3   7 14  10 15   6  8   0  5   9  2
+      6 11  13  8   1  4  10  7   9  5   0 15  14  2   3 12".to_vector(),
+
+     "13  2   8  4   6 15  11  1  10  9   3 14   5  0  12  7
+      1 15  13  8  10  3   7  4  12  5   6 11   0 14   9  2
+      7 11   4  1   9 12  14  2   0  6  10 13  15  3   5  8
+      2  1  14  7   4 10   8 13  15 12   9  0   3  5   6 11".to_vector()]
+
+    # Looks up S box value for 6-digit binary array `b`.
+    s = (iter, b) ->
+      i = parseInt([b[0], b[5]].join(''), 2)
+      j = parseInt([b[1], b[2], b[3], b[4]].join(''), 2)
+
+      s_val = s_boxes[iter][16*i + j]
+      # FIXME: convert s_val to 4 bit binary array.
+
+
+    ##### Feistel algorithm #####
+
+    # 1. Expansion (32 bits -> 48 bits)
+    e = permutations.e(rn1)
+
+    # 2. Key mixing
+    x = xor(kn, permutations.e(rn1))
+
+    # 3. Substitution
+    sixes = x.split_into_parts(8)
+    subbed = _.flatten(_.map(sixes, (six, iter) -> s(iter, sixes)))
+
+    # 4. Permutation
+    p(subbed)
+
+  ### Algorithm ###
+
   log "k: #{hs_k}"
   log "p: #{hs_p}"
 
@@ -152,37 +236,58 @@ des = (hs_k, hs_p) ->
   log "k: #{k.print()}"
   log "p: #{p.print()}"
 
-  ### Create subkeys ###
-  # We generate 16 48-bit subkeys.
+  #### Create 16 48-bit subkeys ####
 
-
-  # Apply PC-1. 64 bits -> 56 bits.
+  # Apply PC-1 to the initial key. This reduces the 64-bit key into
+  # 56-bits. Becasue we've done no other transformations on the key so far, this
+  # effectively means 8 of the bits were useless; thus, the effective key-length
+  # is 56, not 64.
   k_prime = permutations.pc1(k)
   log "k': #{k_prime.print()}"
 
-  # Split permuted key into two halves.
   c = []
   d = []
 
+  # Split the permuted key into two halves.
   c.push k_prime.slice(0, 28)
   d.push k_prime.slice(28)
 
-  # We will left-shift the key-halves by these increments.
+  # Create 16 different intermediary half-keys by left-shifting the half-keys by
+  # these increments.
   shift_schedule = "1122222212222221".to_vector('')
-  log "shift schedule: #{shift_schedule.print()}"
-
-  # Produce intermediary half-keys according to the shift schedule.
   _.each(shift_schedule, (shift) ->
     c.push c.peek().left_shift(shift)
     d.push d.peek().left_shift(shift)
   )
-
+  log "shift schedule: #{shift_schedule.print()}"
   _.each(c, (ci, i) -> log "c#{i}: #{ci.print()}")
   _.each(d, (di, i) -> log "d#{i}: #{di.print()}")
 
+  # Create the 16 final subkeys by combining the 16 different half-keys and then
+  # applying PC-2. The left-shifting only made each subkey slightly different,
+  # but when the slightly different subkeys are put through PC-2, they become
+  # very different.
   ks = _.map(_.zip(c, d), (cd) -> permutations.pc2(cd[0].concat(cd[1])))
-
   _.each(ks, (ki, i) -> log "k#{i}: #{ki.print()}")
+
+  #### Initial permutation ####
+
+  ip = permutations.ip(p)
+  log "ip: #{ip}"
+
+  #### Rounds ####
+
+  l = []
+  r = []
+
+  # Split the permuted block into two halves.
+  l.push ip.slice(0, 28)
+  r.push ip.slice(28)
+
+
+
+
+
 
 
 
