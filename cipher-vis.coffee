@@ -39,6 +39,9 @@ hex_to_bin_array = (s) ->
   log("INVALID HEX STRING") unless all_hex(s)
   _.reduce(s.split(""), ((mem, h) -> mem.concat(hex_digit_to_bin_array(h))), [])
 
+bin_array_to_hex = (a) ->
+  parseInt(a.join(''), 2).toString(16).toUpperCase()
+
 ## Binary Operations
 
 # Returns whether `n` is a valid binary representation (array or string of
@@ -52,7 +55,7 @@ valid_bin = (n) ->
 # Xor on two binary arrays or strings; returns a binary array.
 xor = (b1, b2) ->
   log "1st argument in Xor not vaild binary" unless valid_bin(b1)
-  log "2nd argument in Xor not valid binary" unless vaild_bin(b2)
+  log "2nd argument in Xor not valid binary" unless valid_bin(b2)
   log "Arguments in Xor have different length" unless b1.length == b2.length
 
   _.map(_.zip(b1, b2), (x) -> x[0] ^ x[1])
@@ -72,10 +75,11 @@ Array.prototype.peek = () -> this[this.length - 1]
 Array.prototype.to_int = () -> _.map(this, (x) -> parseInt(x))
 
 Array.prototype.split_into_parts = (n) ->
+  that = this
   m = this.length / n
   splits = []
   _.times(n, (i) ->
-    splits.push this.slice(n*i, (n+1)*i)
+    splits.push that.slice(m*i, m*(i+1))
   )
   splits
 
@@ -160,54 +164,55 @@ des = (hs_k, hs_p) ->
 
     ##### Substition (S) boxes #####
 
+    # FIXME: formatting
     s_boxes = ["14 4  13 1  2  15 11 8  3  10 6  12 5  9  0  7
                 0  15 7  4  14 2  13 1  10 6  12 11 9  5  3  8
                 4  1  14 8  13 6  2  11 15 12 9  7  3  1  5  0
-                15 12 8  2  4  9  1  7  5  11 3  14 10 0  6  13".to_vector(),
+                15 12 8  2  4  9  1  7  5  11 3  14 10 0  6  13".to_vector().to_int(),
 
                "15 1  8  14 6  11 3  4  9  7  2  13 12 0  5  10
                 3  13 4  7  15 2  8  14 12 0  1  10 6  9  11 5
                 0  14 7  11 10 4  13 1  5  8  12 6  9  3  2  15
-                13 8  10 1  3  15 4  2  11 6  7  12 0  5  14 9".to_vector(),
+                13 8  10 1  3  15 4  2  11 6  7  12 0  5  14 9".to_vector().to_int(),
 
                "10 0  9  14 6  3  15 5  1  13 12 7  11 4  2  8
                 13 7  0  9  3  4  6  10 2  8  5  14 12 11 15 1
                 13 6  4  9  8  15 3  0  11 1  2  12 5  10 14 7
-                1 10  13 0  6  9  8  7  4  15 14 3  11 5  2  12".to_vector(),
+                1 10  13 0  6  9  8  7  4  15 14 3  11 5  2  12".to_vector().to_int(),
 
                "7  13 14 3  0  6  9  10 1  2  8  5  11 12 4  15
                 13 8  11 5  6  15 0  3  4  7  2  12 1  10 14 9
                 10 6  9  0  12 11 7  13 15 1  3  14 5  2  8  4
-                3  15 0  6  10 1  13 8  9  4  5  11 12 7  2 14".to_vector(),
+                3  15 0  6  10 1  13 8  9  4  5  11 12 7  2 14".to_vector().to_int(),
 
                "2 12   4  1   7 10  11  6   8  5   3 15  13  0  14  9
-               14 11   2 12   4  7  13  1   5  0  15 10   3  9   8  6
-      4  2   1 11  10 13   7  8  15  9  12  5   6  3   0 14
-     11  8  12  7   1 14   2 13   6 15   0  9  10  4   5  3".to_vector(),
+                14 11   2 12   4  7  13  1   5  0  15 10   3  9   8  6
+                4  2   1 11  10 13   7  8  15  9  12  5   6  3   0 14
+                11  8  12  7   1 14   2 13   6 15   0  9  10  4   5  3".to_vector().to_int(),
 
-     "12  1  10 15   9  2   6  8   0 13   3  4  14  7   5 11
-     10 15   4  2   7 12   9  5   6  1  13 14   0 11   3  8
-      9 14  15  5   2  8  12  3   7  0   4 10   1 13  11  6
-      4  3   2 12   9  5  15 10  11 14   1  7   6  0   8 13".to_vector(),
+               "12  1  10 15   9  2   6  8   0 13   3  4  14  7   5 11
+                10 15   4  2   7 12   9  5   6  1  13 14   0 11   3  8
+                9 14  15  5   2  8  12  3   7  0   4 10   1 13  11  6
+                4  3   2 12   9  5  15 10  11 14   1  7   6  0   8 13".to_vector().to_int(),
 
-      "4 11   2 14  15  0   8 13   3 12   9  7   5 10   6  1
-     13  0  11  7   4  9   1 10  14  3   5 12   2 15   8  6
-      1  4  11 13  12  3   7 14  10 15   6  8   0  5   9  2
-      6 11  13  8   1  4  10  7   9  5   0 15  14  2   3 12".to_vector(),
+               "4 11   2 14  15  0   8 13   3 12   9  7   5 10   6  1
+                13  0  11  7   4  9   1 10  14  3   5 12   2 15   8  6
+                1  4  11 13  12  3   7 14  10 15   6  8   0  5   9  2
+                6 11  13  8   1  4  10  7   9  5   0 15  14  2   3 12".to_vector().to_int(),
 
-     "13  2   8  4   6 15  11  1  10  9   3 14   5  0  12  7
-      1 15  13  8  10  3   7  4  12  5   6 11   0 14   9  2
-      7 11   4  1   9 12  14  2   0  6  10 13  15  3   5  8
-      2  1  14  7   4 10   8 13  15 12   9  0   3  5   6 11".to_vector()]
+               "13  2   8  4   6 15  11  1  10  9   3 14   5  0  12  7
+                1 15  13  8  10  3   7  4  12  5   6 11   0 14   9  2
+                7 11   4  1   9 12  14  2   0  6  10 13  15  3   5  8
+                2  1  14  7   4 10   8 13  15 12   9  0   3  5   6 11".to_vector().to_int()
+              ]
 
     # Looks up S box value for 6-digit binary array `b`.
     s = (iter, b) ->
       i = parseInt([b[0], b[5]].join(''), 2)
       j = parseInt([b[1], b[2], b[3], b[4]].join(''), 2)
 
-      s_val = s_boxes[iter][16*i + j]
-      # FIXME: convert s_val to 4 bit binary array.
-
+      s_val = s_boxes[iter][16*i + j].toString(2)
+      ("0000".slice(s_val.length) + s_val).split('').to_int()
 
     ##### Feistel algorithm #####
 
@@ -215,14 +220,14 @@ des = (hs_k, hs_p) ->
     e = permutations.e(rn1)
 
     # 2. Key mixing
-    x = xor(kn, permutations.e(rn1))
+    x = xor(e, kn)
 
     # 3. Substitution
     sixes = x.split_into_parts(8)
-    subbed = _.flatten(_.map(sixes, (six, iter) -> s(iter, sixes)))
+    ss = _.flatten(_.map(sixes, (six, iter) -> s(iter, six)))
 
     # 4. Permutation
-    p(subbed)
+    permutations.p(ss)
 
   ### Algorithm ###
 
@@ -273,7 +278,7 @@ des = (hs_k, hs_p) ->
   #### Initial permutation ####
 
   ip = permutations.ip(p)
-  log "ip: #{ip}"
+  log "ip: #{ip.print()}"
 
   #### Rounds ####
 
@@ -281,16 +286,27 @@ des = (hs_k, hs_p) ->
   r = []
 
   # Split the permuted block into two halves.
-  l.push ip.slice(0, 28)
-  r.push ip.slice(28)
+  l.push ip.slice(0, 32)
+  r.push ip.slice(32)
 
+  # Perform each round.
+  # L_n = R_{n-1}
+  # R_n = L_{n-1} + f(R_{n-1}, K_n)
+  _.times(16, (n) ->
+    l.push r.peek()
+    r.push xor(l.peek(), f(r.peek(), ks[n]))
+  )
 
+  _.each(l, (li, i) -> log "l#{i}: #{li.print()}")
+  _.each(r, (ri, i) -> log "r#{i}: #{ri.print()}")
 
+  #### Final permutation ####
 
+  ip1 = permutations.ipinv r.peek().concat(l.peek())
+  log "ip^{-1}: #{ip1.print()}"
 
-
-
-
+  # Convert back to hex.
+  return bin_array_to_hex ip1
 
 
 # Validate the key and plaintext; return error if etiher fails to validate.
