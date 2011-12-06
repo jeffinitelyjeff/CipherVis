@@ -70,7 +70,16 @@ collect = (a, idxs) ->
 
 String.prototype.to_vector = (delim = ' ') -> _.without(this.split(delim), "")
 
-Array.prototype.print = () -> this.join('')
+Array.prototype.print = (n) ->
+  if n?
+    that = []
+    _.each(this, (e, i) ->
+      that.push e
+      that.push(' ') if (i+1) % n == 0
+    )
+    that.join('')
+  else
+    this.join('')
 Array.prototype.peek = () -> this[this.length - 1]
 Array.prototype.to_int = () -> _.map(this, (x) -> parseInt(x))
 
@@ -238,8 +247,8 @@ des = (hs_k, hs_p) ->
   k = hex_to_bin_array hs_k
   p = hex_to_bin_array hs_p
 
-  log "k: #{k.print()}"
-  log "p: #{p.print()}"
+  log "k: #{k.print(4)}"
+  log "p: #{p.print(4)}"
 
   #### Create 16 48-bit subkeys ####
 
@@ -248,7 +257,7 @@ des = (hs_k, hs_p) ->
   # effectively means 8 of the bits were useless; thus, the effective key-length
   # is 56, not 64.
   k_prime = permutations.pc1(k)
-  log "k': #{k_prime.print()}"
+  log "k': #{k_prime.print(4)}"
 
   c = []
   d = []
@@ -265,20 +274,20 @@ des = (hs_k, hs_p) ->
     d.push d.peek().left_shift(shift)
   )
   log "shift schedule: #{shift_schedule.print()}"
-  _.each(c, (ci, i) -> log "c#{i}: #{ci.print()}")
-  _.each(d, (di, i) -> log "d#{i}: #{di.print()}")
+  _.each(c, (ci, i) -> log "c#{i}: #{ci.print(4)}")
+  _.each(d, (di, i) -> log "d#{i}: #{di.print(4)}")
 
   # Create the 16 final subkeys by combining the 16 different half-keys and then
   # applying PC-2. The left-shifting only made each subkey slightly different,
   # but when the slightly different subkeys are put through PC-2, they become
   # very different.
   ks = _.map(_.zip(c, d), (cd) -> permutations.pc2(cd[0].concat(cd[1])))
-  _.each(ks, (ki, i) -> log "k#{i}: #{ki.print()}")
+  _.each(ks, (ki, i) -> log "k#{i}: #{ki.print(4)}")
 
   #### Initial permutation ####
 
   ip = permutations.ip(p)
-  log "ip: #{ip.print()}"
+  log "ip: #{ip.print(4)}"
 
   #### Rounds ####
 
@@ -297,13 +306,13 @@ des = (hs_k, hs_p) ->
     r.push xor(l.peek(), f(r.peek(), ks[n]))
   )
 
-  _.each(l, (li, i) -> log "l#{i}: #{li.print()}")
-  _.each(r, (ri, i) -> log "r#{i}: #{ri.print()}")
+  _.each(l, (li, i) -> log "l#{i}: #{li.print(4)}")
+  _.each(r, (ri, i) -> log "r#{i}: #{ri.print(4)}")
 
   #### Final permutation ####
 
   ip1 = permutations.ipinv r.peek().concat(l.peek())
-  log "ip^{-1}: #{ip1.print()}"
+  log "ip^{-1}: #{ip1.print(4)}"
 
   # Convert back to hex.
   return bin_array_to_hex ip1
@@ -361,5 +370,6 @@ $(document).ready ->
   $("#plaintext, #key").keydown (e) -> $("#encipher").click() if e.keyCode == 13
 
   if DEBUG
-    $("#key").val("596F7572206C6970")
-    $("#plaintext").val("732061726520736D")
+    # Set defaults
+    $("#key").val("133457799BBCDFF1")
+    $("#plaintext").val("0123456789ABCDEF")
