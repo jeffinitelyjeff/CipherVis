@@ -163,7 +163,7 @@ feistel = (r, k) ->
   x = e.xor(k)
 
   # Substitution (48 bits --> 32 bits).
-  sixes = x.to_parts(8)
+  sixes = x.into_parts(8)
   ss = _.flatten(_.map(sixes, (six, iter) -> lookup_s_box(iter, six)))
 
   # Permutation (32 bits --> 32 bits).
@@ -254,7 +254,7 @@ des = (k_hex, p_hex) ->
   log "p: #{p.print(4)}" # FIXME
 
   # Initial permutation (64 bits --> 64 bits).
-  ip = permutations.ip(p)
+  ip = p.perm_ip()
   log "ip: #{ip.print(4)}" # FIXME
 
   # Generate subkeys.
