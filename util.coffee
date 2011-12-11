@@ -128,3 +128,9 @@ arr =
   # Shifts the elements of array `this` left `n` times. `n` elements at the
   # beginning of the array are placed at the end (in order).
   shift_left: (n) -> this.slice(n).concat(this.slice(0, n))
+
+
+# Export the collections of functions.
+root.utils = utils
+root.str = str
+root.arr = arr
