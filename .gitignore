@@ -2,3 +2,7 @@
 *.log
 *.out
 *.pdf
+build/*
+docs/*
+.sass-cache*
+node_modules/*
