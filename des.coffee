@@ -1,13 +1,17 @@
 root = exports ? this
 
+log = root.utils.log
+_.each(root.str, (f, name) -> String.prototype[name] = f)
+_.each(root.arr, (f, name) -> Array.prototype[name] = f)
+
 # Data Encryption Standard (DES) implementation.
 
 ## Tables ##
 
-### Permutation tables ###
+### Permutations tables ###
 _({
 
-    # Permuted choice 1 (PC-1). 64 bits -> 56 bits.
+    # Permuted choice 1 (PC-1). 64 bits --> 56 bits.
     pc1: "57  49  41  33  25  17   9
            1  58  50  42  34  26  18
           10   2  59  51  43  35  27
@@ -17,7 +21,7 @@ _({
           14   6  61  53  45  37  29
           21  13   5  28  20  12   4"
 
-    # Permuted choice 2 (PC-2). 56 bits -> 48 bits.
+    # Permuted choice 2 (PC-2). 56 bits --> 48 bits.
     pc2: "14  17  11  24   1   5
            3  28  15   6  21  10
           23  19  12   4  26   8
@@ -27,7 +31,7 @@ _({
           44  49  39  56  34  53
           46  42  50  36  29  32"
 
-    # Initial permutation (IP). 64 bits -> 64 bits.
+    # Initial permutation (IP). 64 bits --> 64 bits.
     ip: "58  50  42  34  26  18  10  2
          60  52  44  36  28  20  12  4
          62  54  46  38  30  22  14  6
@@ -37,7 +41,7 @@ _({
          61  53  45  37  29  21  13  5
          63  55  47  39  31  23  15  7"
 
-    # Final permutation (IP^-1). Inverse of IP. 64 bits -> 64 bits.
+    # Final permutation (IP^-1). Inverse of IP. 64 bits --> 64 bits.
     ipinv: "40  8  48  16  56  24  64  32
             39  7  47  15  55  23  63  31
             38  6  46  14  54  22  62  30
@@ -47,7 +51,7 @@ _({
             34  2  42  10  50  18  58  26
             33  1  41   9  49  17  57  25"
 
-    # Expansion function (E). 32 bits -> 48 bits.
+    # Expansion function (E). 32 bits --> 48 bits.
     e: "32   1   2   3   4   5
          4   5   6   7   8   9
          8   9  10  11  12  13
@@ -57,7 +61,7 @@ _({
         24  25  26  27  28  29
         28  29  30  31  32   1"
 
-    # Permutation (P). 32 bits -> 32 bits.
+    # Permutation (P). 32 bits --> 32 bits.
     p: "16   7  20  21
         29  12  28  17
          1  15  23  26
@@ -69,8 +73,6 @@ _({
 
 # Allow us to easily apply permutations like `k.perm_pc1()`.
 }).each((v,k) -> Array.prototype["perm_#{k}"] = () -> this.collect(v.to_vector()))
-
-
 
 
 ### Substitution tables ###
@@ -126,124 +128,155 @@ s_boxes = _([
 # Clean each box into an array.
 ]).map((box) -> box.to_vector())
 
+
+## Functions ##
+
+### Substitution functions ###
+
 # Given s-box number `n` (0-indexed), row `r`, nad column `c`, returns the
 # binary string of the value at that position of the specified s-box.
 get_s_box = (n, r, c) -> s_boxes[n][16*r + c].toString(2)
 
+# Looks up S box value for 6-digit binary array `b`.
+lookup_s_box = (n, b) ->
 
-root.des = (k_hex, p_hex) ->
+  # Get the row in the s-box.
+  i = parseInt([b[0], b[5]].join(''), 2)
 
-  #### Feistel function ####
+  # Get the column in the s-box.
+  j = parseInt([b[1], b[2], b[3], b[4]].join(''), 2)
 
-  f = (rn1, kn) ->
-
-    ##### Substition (S) boxes #####
-
-    # Looks up S box value for 6-digit binary array `b`.
-    s_box = (iter, b) ->
+  return get_s_box(n, i, j).pad(4).to_vector('')
 
 
-      s_boxes = _.map(s_boxes, (box) -> box.to_vector().to_int())
+### Feistel function ###
 
-      # Get the row in the s-box.
-      i = parseInt([b[0], b[5]].join(''), 2)
-      # Get the column in the s-box.
-      j = parseInt([b[1], b[2], b[3], b[4]].join(''), 2)
+# Given the right half of a round `r` and the next subkey `k`, compute the
+# Fiestel function (which will be xor'ed with `r`'s matching left half to
+# generate the next right half).
+feistel = (r, k) ->
 
-      s_val = s_boxes[iter][16*i + j].toString(2)
-      return ("0000".slice(s_val.length) + s_val).split('').to_int()
+  # Expansion (32 bits --> 48 bits).
+  e = r.perm_e()
 
-    ##### Feistel algorithm #####
+  # Key mixing.
+  x = e.xor(k)
 
-    # 1. Expansion (32 bits -> 48 bits)
-    e = permutations.e(rn1)
+  # Substitution (48 bits --> 32 bits).
+  sixes = x.to_parts(8)
+  ss = _.flatten(_.map(sixes, (six, iter) -> lookup_s_box(iter, six)))
 
-    # 2. Key mixing
-    x = xor(e, kn)
+  # Permutation (32 bits --> 32 bits).
+  return ss.perm_p()
 
-    # 3. Substitution
-    sixes = x.split_into_parts(8)
-    ss = _.flatten(_.map(sixes, (six, iter) -> s_box(iter, six)))
 
-    # 4. Permutation
-    permutations.p(ss)
+### Subkey generation ###
 
-  ### Algorithm ###
+# Creates 16 different subkeys given the one main key `k`.
+subkeys = (k) ->
 
-  log "k: #{hs_k}"
-  log "p: #{hs_p}"
+  # Apply PC-1 to the key.
+  # Because PC-1 is 64-bit -> 56-bit and we've done no obfuscating
+  # transformations yet, this means the effective key-length is 56-bits.
+  k_prime = k.perm_pc1()
+  log "k': #{k_prime.print(4)}" # FIXME
 
-  # Binary arrays of key and plaintext.
-  k = hex_to_bin_array hs_k
-  p = hex_to_bin_array hs_p
+  # We generate the subkeys in parallel halves.
+  [c, d] = [[], []]
 
-  log "k: #{k.print(4)}"
-  log "p: #{p.print(4)}"
-
-  #### Create 16 48-bit subkeys ####
-
-  # Apply PC-1 to the initial key. This reduces the 64-bit key into
-  # 56-bits. Becasue we've done no other transformations on the key so far, this
-  # effectively means 8 of the bits were useless; thus, the effective key-length
-  # is 56, not 64.
-  k_prime = permutations.pc1(k)
-  log "k': #{k_prime.print(4)}"
-
-  c = []
-  d = []
-
-  # Split the permuted key into two halves.
+  # We treat the PC1ed key as the 0th subkey for convenience.
   c.push k_prime.slice(0, 28)
   d.push k_prime.slice(28)
 
-  # Create 16 different intermediary half-keys by left-shifting the half-keys by
-  # these increments.
+  # We will generate the half-subkeys by left-shifting the previous half-subkey
+  # by the amount dictated by this shedule (i.e., the 1st is a left-shift of the
+  # 0th by 1, the 2nd a left-shift of the 1st by 1, the 3rd a left-shift of the
+  # 2nd by 2, etc.)
   shift_schedule = "1122222212222221".to_vector('')
-  _.each(shift_schedule, (shift) ->
-    c.push c.peek().left_shift(shift)
-    d.push d.peek().left_shift(shift)
+  _.each(shift_schedule, (n) ->
+    c.push c.peek().shift_left(n)
+    d.push d.peek().shift_left(n)
   )
-  log "shift schedule: #{shift_schedule.print()}"
-  _.each(c, (ci, i) -> log "c#{i}: #{ci.print(4)}")
-  _.each(d, (di, i) -> log "d#{i}: #{di.print(4)}")
+  log "shift schedule: #{shift_schedule.print()}" # FIXME
+  _.each(c, (ci, i) -> log "c#{i}: #{ci.print(4)}") # FIXME
+  _.each(d, (di, i) -> log "d#{i}: #{di.print(4)}") # FIXME
 
-  # Create the 16 final subkeys by combining the 16 different half-keys and then
-  # applying PC-2. The left-shifting only made each subkey slightly different,
-  # but when the slightly different subkeys are put through PC-2, they become
-  # very different.
-  ks = _.map(_.zip(c, d), (cd) -> permutations.pc2(cd[0].concat(cd[1])))
-  _.each(ks, (ki, i) -> log "k#{i}: #{ki.print(4)}")
+  # We create the 16 final subkeys by putting the half-keys together and
+  # applying PC-2. By left-shifting each subkey, we only varied them a little,
+  # but that difference is magnified by PC-2.
+  ks = _.map(_.zip(c, d), (cd) -> cd[0].concat(cd[1]).perm_pc2())
+  _.each(ks, (ki, i) -> log "k#{i}: #{ki.print(4)}") # FIXME
 
-  #### Initial permutation ####
+  # Because we treated the un-shifted PC1ed key as the 0th subkey and then
+  # shifted 16 times, we ended up with 17 keys. We don't actually want to treat
+  # `k[0]` as a key.
+  return ks.slice(1)
 
-  ip = permutations.ip(p)
-  log "ip: #{ip.print(4)}"
+### Rounds ###
 
-  #### Rounds ####
+# Performs the 16 rounds on the initial permutation using the 16 subkeys.
+# Splits the initial permutation into halves and then creates subsequent rounds
+# by:
+#
+#   - _L\_n = R\_{n-1}_
+#   - _R\_n = L\_{n-1} + f(R\_{n-1}, K\_n)_
+#
+# Returns the results of the final round appended backwards (RL).
+rounds = (ip, ks) ->
 
-  l = []
-  r = []
+  # Initialize the halves with the initial permutation (64-bits) split in half.
+  [l, r] = [[ip.slice(0, 32)], [ip.slice(32)]]
 
-  # Split the permuted block into two halves.
-  l.push ip.slice(0, 32)
-  r.push ip.slice(32)
-
-  # Perform each round.
-  # L_n = R_{n-1}
-  # R_n = L_{n-1} + f(R_{n-1}, K_n)
-  _.times(16, (n) ->
+  _.times(16, (i) ->
     l.push r.peek()
-    r.push xor(l.peek(), f(r.peek(), ks[n]))
-  )
+    r.push l.peek().xor(feistel(r.peek(), ks[i]))
+  }
 
-  _.each(l, (li, i) -> log "l#{i}: #{li.print(4)}")
-  _.each(r, (ri, i) -> log "r#{i}: #{ri.print(4)}")
+  _.each(l, (li, i) -> log "l#{i}: #{li.print(4)}") # FIXME
+  _.each(r, (ri, i) -> log "r#{i}: #{ri.print(4)}") # FIXME
 
-  #### Final permutation ####
+  return r.peek().concat(l.peek())
 
-  ip1 = permutations.ipinv r.peek().concat(l.peek())
-  log "ip^{-1}: #{ip1.print(4)}"
 
-  # Convert back to hex.
-  return bin_array_to_hex ip1
+## Algorithm ##
 
+
+des = (k_hex, p_hex) ->
+
+  log "k: #{k_hex}" # FIXME
+  log "p: #{p_hex}" # FIXME
+
+  # Hex --> binary.
+  k = k_hex.to_bin_array()
+  p = p_hex.to_bin_array()
+
+  log "k: #{k.print(4)}" # FIXME
+  log "p: #{p.print(4)}" # FIXME
+
+  # Initial permutation (64 bits --> 64 bits).
+  ip = permutations.ip(p)
+  log "ip: #{ip.print(4)}" # FIXME
+
+  # Generate subkeys.
+  ks = subkeys(k)
+
+  # Perform rounds.
+  rounded = rounds(ip, ks)
+
+  # Final permutation (64 bits --> 64 bits).
+  ip1 = rounded.perm_ip1()
+  log "ip^{-1}: #{ip1.print(4)}" # FIXME
+
+  # Binary -> hex.
+  return ip1.to_hex()
+
+
+# Export DES.
+root.des = des
+
+# Export stuff for testing.
+root.get_s_box = get_s_box
+root.lookup_s_box = lookup_s_box
+root.feistel = feistel
+root.subkeys = subkeys
+root.rounds = rounds

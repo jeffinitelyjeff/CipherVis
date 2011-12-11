@@ -1,10 +1,13 @@
 root = exports ? this
 
+log = root.utils.log
+_.each(root.str, (f, name) -> String.prototype[name] = f)
+_.each(root.arr, (f, name) -> Array.prototype[name] = f)
+des = root.des
 
 ## Settings
 
 DEBUG = true
-
 
 # Validate the key and plaintext; return error if etiher fails to validate.
 validate = (key, plain) ->
@@ -17,25 +20,22 @@ validate = (key, plain) ->
       "#{name} too short"
     else if str.length > 16
       "#{name} too long"
-    else unless all_hex(str)
+    else unless str.is_hex()
       "non-hex chars in #{name}"
     else
       ""
-
-  caps = (str) ->
-    str.charAt(0).toUpperCase() + str.slice(1)
 
   k_msg = generic_validate("key", key)
   p_msg = generic_validate("plaintext", plain)
 
   if k_msg
     if p_msg
-      "#{caps(k_msg)}; #{p_msg}"
+      "#{k_msg.caps()}; #{p_msg}"
     else
-      caps(k_msg)
+      k_msg.caps()
   else
     if p_msg
-      caps(p_msg)
+      p_msg.caps()
     else
       ""
 

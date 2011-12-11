@@ -10,6 +10,8 @@ log = (x) -> console.log(x)
 
 utils =
 
+  log: log
+
   # Determine if variable `s` is a string. There are several methods for type
   # introspection in JavaScript, so this provides an easy abstraction away from
   # those details and provides consistency with other `is_` functions.
@@ -39,6 +41,9 @@ str =
 
   # Create copy of string `this` with characters reversed.
   reverse: () -> this.split('').reverse().join('')
+
+  # Capitalize the first character of string `this`.
+  caps: () -> this.charAt(0).toUpperCase() + str.slice(1)
 
   # Determine if string `this` is all uppercase.
   is_upper: () -> this == this.toUpperCase()
@@ -73,6 +78,13 @@ str =
   # Converts string `this` to an array of integers, split by delimeter `delim`
   # (the default value is `' '`).
   to_vector: (delim = ' ') -> _.without(this.split(delim), '').to_int()
+
+  # Repeats string `this` `n` number of times. Like `n * this` in Python.
+  repeat: (n) -> new Array(n+1).join(this)
+
+  # Creates a copy of `this` with enough `0`s in front such that the new length
+  # is at least `n`.
+  pad: (n) -> '0'.repeat(n).slice(this.length) + s
 
 
 ## Array utilities ##
