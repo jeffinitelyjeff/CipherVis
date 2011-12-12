@@ -48,10 +48,10 @@ str.reverse = () -> this.split('').reverse().join('')
 str.caps = () -> this.charAt(0).toUpperCase() + this.slice(1)
 
 # Determine if string `this` is all uppercase.
-str.is_upper = () -> this == this.toUpperCase()
+str.is_upper = () -> "" + this == this.toUpperCase()
 
 # Determine if string `this` is all lowercase.
-str.is_lower = () -> this == this.toLowerCase()
+str.is_lower = () -> "" + this == this.toLowerCase()
 
 # Determine if all characters in string `this` are valid hex characters.
 str.is_hex = () ->
