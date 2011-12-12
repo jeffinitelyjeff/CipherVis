@@ -2,7 +2,7 @@
 *.log
 *.out
 *.pdf
-build/*
+public/*
 docs/*
 .sass-cache*
-node_modules/*
+*.lock

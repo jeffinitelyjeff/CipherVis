@@ -230,7 +230,7 @@ rounds = (ip, ks) ->
   _.times(16, (i) ->
     l.push r.peek()
     r.push l.peek().xor(feistel(r.peek(), ks[i]))
-  }
+  )
 
   _.each(l, (li, i) -> log "l#{i}: #{li.print(4)}") # FIXME
   _.each(r, (ri, i) -> log "r#{i}: #{ri.print(4)}") # FIXME
