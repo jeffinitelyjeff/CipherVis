@@ -60,7 +60,7 @@ describe "String utilities", ->
 
   describe "reverse", ->
 
-    it "sholud reverse stuff", ->
+    it "should reverse stuff", ->
       expect("unehau".reverse()).toEqual("uahenu")
       expect("3,a31.,3".reverse()).toEqual("3,.13a,3")
       expect(" 43t2nh 223n".reverse()).toEqual("n322 hn2t34 ")
@@ -116,3 +116,114 @@ describe "String utilities", ->
     it "should say no to no hex", ->
       expect(",'.p.p.,p.p.'p.qqjuk;".is_hex()).toBeFalsy()
       expect("zzzzzuuuuqqqqq".is_hex()).toBeFalsy()
+
+  describe "is_bin", ->
+
+    it "should say yes to all bin", ->
+      expect("010101010101".is_bin()).toBeTruthy()
+      expect("0000000".is_bin()).toBeTruthy()
+      expect("111111".is_bin()).toBeTruthy()
+
+    it "should say no to some non-bin", ->
+      expect("0110331".is_bin()).toBeFalsy()
+      expect("011010101h".is_bin()).toBeFalsy()
+      expect("a0101010".is_bin()).toBeFalsy()
+
+    it "should say no to all non-bin", ->
+      expect("58548958543".is_bin()).toBeFalsy()
+      expect("thuneouehtaseu".is_bin()).toBeFalsy()
+
+  describe "to_bin", ->
+
+    it "should convert hex digits", ->
+      expect("0".to_bin()).toEqual "0000"
+      expect("1".to_bin()).toEqual "0001"
+      expect("2".to_bin()).toEqual "0010"
+      expect("3".to_bin()).toEqual "0011"
+      expect("4".to_bin()).toEqual "0100"
+      expect("5".to_bin()).toEqual "0101"
+      expect("6".to_bin()).toEqual "0110"
+      expect("7".to_bin()).toEqual "0111"
+      expect("8".to_bin()).toEqual "1000"
+      expect("9".to_bin()).toEqual "1001"
+      expect("A".to_bin()).toEqual "1010"
+      expect("B".to_bin()).toEqual "1011"
+      expect("C".to_bin()).toEqual "1100"
+      expect("D".to_bin()).toEqual "1101"
+      expect("E".to_bin()).toEqual "1110"
+      expect("F".to_bin()).toEqual "1111"
+
+    it "should convert hex strings", ->
+      expect("66".to_bin()).toEqual "01100110"
+      expect("8A".to_bin()).toEqual "10001010"
+      expect("45BD".to_bin()).toEqual "0100010110111101"
+
+  describe "to_bin_array", ->
+
+    it "should convert hex digits", ->
+      expect("0".to_bin_array()).toEqual "0000".to_a()
+      expect("1".to_bin_array()).toEqual "0001".to_a()
+      expect("2".to_bin_array()).toEqual "0010".to_a()
+      expect("3".to_bin_array()).toEqual "0011".to_a()
+      expect("4".to_bin_array()).toEqual "0100".to_a()
+      expect("5".to_bin_array()).toEqual "0101".to_a()
+      expect("6".to_bin_array()).toEqual "0110".to_a()
+      expect("7".to_bin_array()).toEqual "0111".to_a()
+      expect("8".to_bin_array()).toEqual "1000".to_a()
+      expect("9".to_bin_array()).toEqual "1001".to_a()
+      expect("A".to_bin_array()).toEqual "1010".to_a()
+      expect("B".to_bin_array()).toEqual "1011".to_a()
+      expect("C".to_bin_array()).toEqual "1100".to_a()
+      expect("D".to_bin_array()).toEqual "1101".to_a()
+      expect("E".to_bin_array()).toEqual "1110".to_a()
+      expect("F".to_bin_array()).toEqual "1111".to_a()
+
+    it "should convert hex strings", ->
+      expect("66".to_bin_array()).toEqual "01100110".to_a()
+      expect("8A".to_bin_array()).toEqual "10001010".to_a()
+      expect("45BD".to_bin_array()).toEqual "0100010110111101".to_a()
+
+  describe "to_vector", ->
+
+    it "should split space-padded stuff", ->
+      expect("  2    43  1  4".to_vector()).toEqual [2, 43, 1, 4]
+      expect("2 4 5 9".to_vector()).toEqual [2, 4, 5, 9]
+      expect("2       5 ".to_vector()).toEqual [2, 5]
+      expect("   2".to_vector()).toEqual [2]
+
+  describe "repeat", ->
+
+    it "should repeat stuff", ->
+      expect("a".repeat(5)).toEqual "aaaaa"
+      expect("BD".repeat(3)).toEqual "BDBDBD"
+      expect("".repeat(10)).toEqual ""
+      expect("31415".repeat(1)).toEqual "31415"
+
+    it "should work with 0 to make empty string", ->
+      expect("4340[4932423".repeat(0)).toEqual ""
+
+    it "should work with empty param", ->
+      expect("31415".repeat()).toEqual "31415".repeat(1)
+
+  describe "pad", ->
+
+    it "should work for <= 4", ->
+      expect("".pad(4)).toEqual "0000"
+      expect("A".pad(4)).toEqual "000A"
+      expect("BD".pad(4)).toEqual "00BD"
+      expect("CEF".pad(4)).toEqual "0CEF"
+      expect("GHJI".pad(4)).toEqual "GHJI"
+
+    it "should work when less than length", ->
+      expect("40323".pad(3)).toEqual "40323"
+      expect("AB42".pad(0)).toEqual "AB42"
+      expect("423h".pad(1)).toEqual "423h"
+
+    it "should work with other characters", ->
+      expect("".pad(4, 1)).toEqual "1111"
+      expect("A".pad(4, 1)).toEqual "111A"
+      expect("BD".pad(4, 1)).toEqual "11BD"
+      expect("CEF".pad(4, 1)).toEqual "1CEF"
+      expect("GHJI".pad(4, 1)).toEqual "GHJI"
+
+

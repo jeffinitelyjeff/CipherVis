@@ -192,7 +192,7 @@ subkeys = (k) ->
   # by the amount dictated by this shedule (i.e., the 1st is a left-shift of the
   # 0th by 1, the 2nd a left-shift of the 1st by 1, the 3rd a left-shift of the
   # 2nd by 2, etc.)
-  shift_schedule = "1122222212222221".to_vector('')
+  shift_schedule = "1122222212222221".to_a('')
   _.each(shift_schedule, (n) ->
     c.push c.peek().shift_left(n)
     d.push d.peek().shift_left(n)

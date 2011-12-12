@@ -75,18 +75,18 @@ str.to_bin = () ->
       _.reduce(this.split(''), ((mem, h) -> mem + str.to_bin.call(h)), '')
 
 # Convert hexadecimal string `this` to binary array.
-str.to_bin_array = () -> str.to_bin.call(this).split('')
+str.to_bin_array = () -> str.to_bin.call(this).to_a()
 
 # Converts string `this` to an array of integers, split by delimeter `delim`
 # (the default value is `' '`).
 str.to_vector = (delim = ' ') -> _.without(this.split(delim), '').to_int()
 
 # Repeats string `this` `n` number of times. Like `n * this` in Python.
-str.repeat = (n) -> new Array(n+1).join(this)
+str.repeat = (n = 1) -> new Array(n+1).join(this)
 
 # Creates a copy of `this` with enough `0`s in front such that the new length
 # is at least `n`.
-str.pad = (n) -> '0'.repeat(n).slice(this.length) + s
+str.pad = (n, c = '0') -> ("" + c).repeat(n).slice(this.length) + this
 
 
 ## Array utilities ##
