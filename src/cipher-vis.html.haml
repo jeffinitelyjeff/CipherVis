@@ -8,7 +8,7 @@
 		%script{:type => 'text/javascript', :src => 'util.js'}
 		%script{:type => 'text/javascript', :src => 'des.js'}
 		%script{:type => 'text/javascript', :src => 'cipher-vis.js'}
-		%link{:type => 'text/css', :rel => 'stylesheet', :href => 'http://fonts.googleapis.com/css?family=Ubuntu|Droid+Sans+Mono|Amaranth:700,400'}
+		%link{:type => 'text/css', :rel => 'stylesheet', :href => 'http://fonts.googleapis.com/css?family=Nobile|Ubuntu|Droid+Sans+Mono|Amaranth:700,400'}
 		%link{:type => 'text/css', :rel => 'stylesheet', :href => 'cipher-vis.css'}
 
 	%body
@@ -35,15 +35,91 @@
 				.row
 					%span#ciphertext-label Ciphertext
 					%span#ciphertext
-		#display
-			#binary
-				Convert to binary
-				%span#hex
-				%span#bin
-			#ip
+		%ol#display
+			%li#binary
+				.spacer
+				Convert plaintext to binary
+				%span.one
+				%span.two
+			%li#ip
 				Initial permutation
-				%span#bin
-				%span#ip
+				%span.one
+				%span.two
+			%li#subkeys
+				%ol
+					%li#pc1
+						Permuted choice on key
+						%span.one
+						%span.two
+					%li#split
+						Split the key in half
+						%span.one
+						%span.two
+					%li#shift1
+						Left shift the key once
+						%span.one
+						%span.two
+					%li#shift2
+						Left shift the key once
+						%span.one
+						%span.two
+					%li#shift3
+						Left shift the key twice
+						%span.one
+						%span.two
+					%li#shift4
+						Left shift the key twice
+						%span.one
+						%span.two
+					%li#shift5
+						Left shift the key twice
+						%span.one
+						%span.two
+					%li#shift6
+						Left shift the key twice
+						%span.one
+						%span.two
+					%li#shift7
+						Left shift the key twice
+						%span.one
+						%span.two
+					%li#shift8
+						Left shift the key twice
+						%span.one
+						%span.two
+					%li#shift9
+						Left shift the key once
+						%span.one
+						%span.two
+					%li#shift10
+						Left shift the key twice
+						%span.one
+						%span.two
+					%li#shift11
+						Left shift the key twice
+						%span.one
+						%span.two
+					%li#shift12
+						Left shift the key twice
+						%span.one
+						%span.two
+					%li#shift13
+						Left shift the key twice
+						%span.one
+						%span.two
+					%li#shift14
+						Left shift the key twice
+						%span.one
+						%span.two
+					%li#shift15
+						Left shift the key twice
+						%span.one
+						%span.two
+					%li#shift16
+						Left shift the key once
+						%span.one
+						%span.two
+
 
 
 

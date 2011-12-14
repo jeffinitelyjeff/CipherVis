@@ -53,6 +53,7 @@ $(document).ready ->
       $("#error").text(val).fadeIn(500)
     else
       $("#error").fadeOut(500, () -> $(this).text(""))
+      $("#display > #binary").fadeIn(1000).find(".spacer").slideUp(1000)
       $("#ciphertext").text des(k, p)
 
   $("#plaintext, #key").keydown (e) -> $("#encipher").click() if e.keyCode == 13

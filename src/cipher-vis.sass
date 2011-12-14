@@ -4,7 +4,7 @@ $two: #CDB380
 $three: #036564
 $four: #033649
 $five: #031634
-$width: 400px
+$box-width: 400px
 $min-height: 500px
 $input-width: 207px
 $input-height: 42px
@@ -25,13 +25,27 @@ body
 	font-family: 'Ubuntu', sans-serif
 	background-color: $four
 	color: $five
-	width: $width
+	width: $box-width
 
 #display
-	display: none
+	position: absolute
+	left: $box-width + 100px
+	color: $one
+	font:
+		family: 'Nobile'
+		size: 30px
+		weight: 400
+
+	& > *
+		display: none
+
+	.spacer
+		height: 500px
+
+
 
 #box
-	width: $width
+	width: $box-width
 	min-height: $min-height
 	background-color: $one
 	border: 20px solid $three
@@ -41,7 +55,6 @@ body
 	top: 0
 	bottom: 0
 	padding: 15px
-
 
 h1
 	text-align: center
