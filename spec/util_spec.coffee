@@ -195,6 +195,7 @@ describe "String utilities", ->
       expect("8A".to_bin_array()).toEqual "10001010".to_int_a()
       expect("45BD".to_bin_array()).toEqual "0100010110111101".to_int_a()
 
+
   describe "to_vector", ->
 
     it "should split space-padded stuff", ->
