@@ -172,21 +172,21 @@ feistel = (r, k) ->
 
 ### Subkey generation ###
 
-# Creates 16 different subkeys given the one main key `k`.
-subkeys = (k) ->
+# Creates 16 different subkeys given the one main key `k`. Stores intermediary
+# results in object `results`.
+subkeys = (k, results = {}) ->
 
   # Apply PC-1 to the key.
   # Because PC-1 is 64-bit -> 56-bit and we've done no obfuscating
   # transformations yet, this means the effective key-length is 56-bits.
-  k_prime = k.perm_pc1()
-  log "k': #{k_prime.print(4)}" # FIXME
+  results.k_pc1 = k.perm_pc1()
 
   # We generate the subkeys in parallel halves.
   [c, d] = [[], []]
 
   # We treat the PC1ed key as the 0th subkey for convenience.
-  c.push k_prime.slice(0, 28)
-  d.push k_prime.slice(28)
+  c.push results.k_pc1.slice(0, 28)
+  d.push results.k_pc1.slice(28)
 
   # We will generate the half-subkeys by left-shifting the previous half-subkey
   # by the amount dictated by this shedule (i.e., the 1st is a left-shift of the
@@ -197,20 +197,19 @@ subkeys = (k) ->
     c.push c.peek().shift_left(n)
     d.push d.peek().shift_left(n)
   )
-  log "shift schedule: #{shift_schedule.print()}" # FIXME
-  _.each(c, (ci, i) -> log "c#{i}: #{ci.print(4)}") # FIXME
-  _.each(d, (di, i) -> log "d#{i}: #{di.print(4)}") # FIXME
+
+  results.cd = _.map(_.zip(c, d), (cd) -> cd[0].concat(cd[1]))
 
   # We create the 16 final subkeys by putting the half-keys together and
   # applying PC-2. By left-shifting each subkey, we only varied them a little,
   # but that difference is magnified by PC-2.
-  ks = _.map(_.zip(c, d), (cd) -> cd[0].concat(cd[1]).perm_pc2())
-  _.each(ks, (ki, i) -> log "k#{i}: #{ki.print(4)}") # FIXME
+  ks = _.map(results.cd, (cdi) -> cdi.perm_pc2())
 
   # Because we treated the un-shifted PC1ed key as the 0th subkey and then
   # shifted 16 times, we ended up with 17 keys. We don't actually want to treat
   # `k[0]` as a key.
-  return ks.slice(1)
+  results.ks = ks.slice(1)
+  return results.ks
 
 ### Rounds ###
 
@@ -221,8 +220,9 @@ subkeys = (k) ->
 #   - _L\_n = R\_{n-1}_
 #   - _R\_n = L\_{n-1} + f(R\_{n-1}, K\_n)_
 #
-# Returns the results of the final round appended backwards (RL).
-rounds = (ip, ks) ->
+# Returns the results of the final round appended backwards (RL). Adds
+# intermediary results to object `results`.
+rounds = (ip, ks, results = {}) ->
 
   # Initialize the halves with the initial permutation (64-bits) split in half.
   [l, r] = [[ip.slice(0, 32)], [ip.slice(32)]]
@@ -233,8 +233,7 @@ rounds = (ip, ks) ->
     r.push l_prev.xor(feistel(r_prev, ks[i]))
   )
 
-  _.each(l, (li, i) -> log "l#{i}: #{li.print(4)}") # FIXME
-  _.each(r, (ri, i) -> log "r#{i}: #{ri.print(4)}") # FIXME
+  [results.l, results.r] = [l, r]
 
   return r.peek().concat(l.peek())
 
@@ -244,32 +243,48 @@ rounds = (ip, ks) ->
 
 des = (k_hex, p_hex) ->
 
-  log "k: #{k_hex}" # FIXME
-  log "p: #{p_hex}" # FIXME
+  # We'll store all intermediary results in here.
+  # `r` should contain the following properties on completion of DES:
+  #
+  # - `k_hex`: key as hex string.
+  # - `p_hex`: plaintext as hex string.
+  # - `k`: key as binary array.
+  # - `p`: plaintext as binary array.
+  # - `ip`: initial permutation of plaintext.
+  # - `k_pc1`: permuted choice of key.
+  # - `cd`: shifted subkeys (without pc2).
+  # - `ks`: pc2'ed, i.e. real, subkeys.
+  # - `l`: left half of rounds results.
+  # - `r`: right half of rounds results.
+  # - `rounded`: the final result of the rounds (last `r` concat with last `l`)
+  # - `c`: final ciphertext as binary array.
+  # - `c_hex`: final ciphertext as hex string.
+  r = {}
+  r.k_hex = k_hex
+  r.p_hex = p_hex
 
   # Hex → binary.
-  k = k_hex.to_bin_array()
-  p = p_hex.to_bin_array()
-
-  log "k: #{k.print(4)}" # FIXME
-  log "p: #{p.print(4)}" # FIXME
+  r.k = r.k_hex.to_bin_array()
+  r.p = r.p_hex.to_bin_array()
 
   # Initial permutation (64 bits → 64 bits).
-  ip = p.perm_ip()
-  log "ip: #{ip.print(4)}" # FIXME
+  r.ip = r.p.perm_ip()
 
   # Generate subkeys.
-  ks = subkeys(k)
+  r.ks = subkeys(r.k, r)
 
   # Perform rounds.
-  rounded = rounds(ip, ks)
+  r.rounded = rounds(r.ip, r.ks, r)
 
   # Final permutation (64 bits → 64 bits).
-  ip1 = rounded.perm_ipinv()
-  log "ip^{-1}: #{ip1.print(4)}" # FIXME
+  # Results in final ciphertext.
+  r.c = r.rounded.perm_ipinv()
 
   # Binary -> hex.
-  return ip1.to_hex()
+  r.c_hex = r.c.to_hex()
+
+  # Return the collection of results, including the final result as `c_hex`.
+  return r
 
 
 # Export DES.

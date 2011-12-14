@@ -42,6 +42,8 @@ validate = (key, plain) ->
 
 $(document).ready ->
 
+  results = {}
+
   # Run DES when the arrows are clicked.
   $("#encipher").click ->
     k = $("#key").val()
@@ -51,10 +53,14 @@ $(document).ready ->
 
     if val
       $("#error").text(val).fadeIn(500)
+      results = {}
     else
       $("#error").fadeOut(500, () -> $(this).text(""))
+
+      results = des(k, p)
+
       $("#display > #binary").fadeIn(1000).find(".spacer").slideUp(1000)
-      $("#ciphertext").text des(k, p)
+      $("#ciphertext").text results.c_hex
 
   $("#plaintext, #key").keydown (e) -> $("#encipher").click() if e.keyCode == 13
 
