@@ -286,28 +286,49 @@
         return expect(["1", 5, "6", -5, "-10"].to_int()).toEqual([1, 5, 6, -5, -10]);
       });
     });
-    return describe("to_hex", function() {
+    describe("to_hex", function() {
       it("should work with hex digits", function() {
-        expect("0".to_bin_array().to_hex()).toEqual("0");
-        expect("1".to_bin_array().to_hex()).toEqual("1");
-        expect("2".to_bin_array().to_hex()).toEqual("2");
-        expect("3".to_bin_array().to_hex()).toEqual("3");
-        expect("4".to_bin_array().to_hex()).toEqual("4");
-        expect("5".to_bin_array().to_hex()).toEqual("5");
-        expect("6".to_bin_array().to_hex()).toEqual("6");
-        expect("7".to_bin_array().to_hex()).toEqual("7");
-        expect("8".to_bin_array().to_hex()).toEqual("8");
-        expect("9".to_bin_array().to_hex()).toEqual("9");
-        expect("A".to_bin_array().to_hex()).toEqual("A");
-        expect("B".to_bin_array().to_hex()).toEqual("B");
-        expect("C".to_bin_array().to_hex()).toEqual("C");
-        expect("D".to_bin_array().to_hex()).toEqual("D");
-        expect("E".to_bin_array().to_hex()).toEqual("E");
-        return expect("F".to_bin_array().to_hex()).toEqual("F");
+        expect("0".to_ba().to_hex()).toEqual("0");
+        expect("1".to_ba().to_hex()).toEqual("1");
+        expect("2".to_ba().to_hex()).toEqual("2");
+        expect("3".to_ba().to_hex()).toEqual("3");
+        expect("4".to_ba().to_hex()).toEqual("4");
+        expect("5".to_ba().to_hex()).toEqual("5");
+        expect("6".to_ba().to_hex()).toEqual("6");
+        expect("7".to_ba().to_hex()).toEqual("7");
+        expect("8".to_ba().to_hex()).toEqual("8");
+        expect("9".to_ba().to_hex()).toEqual("9");
+        expect("A".to_ba().to_hex()).toEqual("A");
+        expect("B".to_ba().to_hex()).toEqual("B");
+        expect("C".to_ba().to_hex()).toEqual("C");
+        expect("D".to_ba().to_hex()).toEqual("D");
+        expect("E".to_ba().to_hex()).toEqual("E");
+        return expect("F".to_ba().to_hex()).toEqual("F");
       });
       return it("should work with multiple digits", function() {
-        expect("AB032".to_bin_array().to_hex()).toEqual("AB032");
-        return expect("AF90DD".to_bin_array().to_hex()).toEqual("AF90DD");
+        expect("AB032".to_ba().to_hex()).toEqual("AB032");
+        return expect("AF90DD".to_ba().to_hex()).toEqual("AF90DD");
+      });
+    });
+    return describe("xor", function() {
+      it("should xor digits properly", function() {
+        expect([0].xor([0])).toEqual([0]);
+        expect([0].xor([1])).toEqual([1]);
+        expect([1].xor([0])).toEqual([1]);
+        return expect([1].xor([1])).toEqual([0]);
+      });
+      it("should xor arrays properly", function() {
+        expect([0, 0, 0, 0].xor([1, 1, 1, 1])).toEqual([1, 1, 1, 1]);
+        expect([0, 0, 0, 0].xor([0, 0, 0, 0])).toEqual([0, 0, 0, 0]);
+        expect([1, 1, 1, 1].xor([1, 1, 1, 1])).toEqual([0, 0, 0, 0]);
+        expect([1, 1, 1, 1].xor([0, 0, 0, 0])).toEqual([1, 1, 1, 1]);
+        expect([1, 0, 0, 1, 1].xor([1, 0, 1, 1, 1])).toEqual([0, 0, 1, 0, 0]);
+        return expect([1, 1, 1, 1, 1, 0, 0].xor([0, 0, 1, 1, 1, 0, 1])).toEqual([1, 1, 0, 0, 0, 0, 1]);
+      });
+      return it("should throw error with non-bin first operand", function() {
+        return expect(function() {
+          return [2].xor([0]);
+        }).toThrow(Error);
       });
     });
   });

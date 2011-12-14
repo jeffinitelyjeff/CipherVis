@@ -4,15 +4,21 @@ root = exports ? this
 # performed by Cipher Vis.
 
 # Faster logging syntax.
-log = (x) ->
-  console.log(x)
-  return x
+log = (s) ->
+  console.log(s)
+  return s
+
+# Faster error syntax.
+err = (s) ->
+  throw new Error(s)
 
 ## Miscellaneous utilities ##
 
 utils =
 
   log: log
+
+  err: err
 
   # Determine if variable `s` is a string. There are several methods for type
   # introspection in JavaScript, so this provides an easy abstraction away from
@@ -68,14 +74,18 @@ str.to_bin = () ->
   switch this.length
     when 0 then ''
     when 1
-      log "INVALID HEX CHAR" unless str.is_hex.call(this)
+      err("str.to_bin: invalid hex char") unless str.is_hex.call(this)
       s = parseInt(this, 16).toString(2)
       '0000'.slice(s.length) + s
     else
       _.reduce(this.split(''), ((mem, h) -> mem + str.to_bin.call(h)), '')
+# Shorthand for `str.to_bin`.
+str.to_b = str.to_bin
 
 # Convert hexadecimal string `this` to binary array.
 str.to_bin_array = () -> str.to_int_a.call(str.to_bin.call(this))
+# Shorthand for `str.to_bin_array`.
+str.to_ba = str.to_bin_array
 
 # Converts string `this` to an array of integers, split by delimeter `delim`
 # (the default value is `' '`).
@@ -109,9 +119,9 @@ arr.to_hex = () -> parseInt(this.join(''), 2).toString(16).toUpperCase()
 # Create an array which is the bitwise (element-wise) xor of arrays `this` and
 # `that`. Assumes `this` and `that` are both binary arrays.
 arr.xor = (that) ->
-  log "FIRST XOR OPERAND NOT BINARY" unless arr.is_bin.call(this)
-  log "SECOND XOR OPERAND NOT BINARY" unless arr.is_bin.call(that)
-  log "XOR OPERANDS HAVE DIFFERENT LENGTHS" unless this.length == that.length
+  err("arr.xor: 1st xor operand not binary") unless arr.is_bin.call(this)
+  err("arr.xor: 2nd xor operand not binary") unless arr.is_bin.call(that)
+  err("arr.xor: operands have diff lengths") unless this.length == that.length
   _.map(_.zip(this, that), (x) -> x[0] ^ x[1])
 
 # Create an array that is the specified indices `idxs` of array
