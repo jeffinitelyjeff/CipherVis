@@ -164,17 +164,27 @@ arr.print.err = new Error "arr.print: invalid argument (needs to be non-neg int)
 # Returns the last element of array `this`.
 arr.peek = () -> this[this.length - 1]
 
-# Splits array `this` into `n` parts each (except the last probably) of length
-# `this.length / n`.
+# Splits array `this` into `n` parts. Requires that `n` cleanly divides `this.length`.
 arr.into_parts = (n) ->
+  throw arr.into_parts.err unless utils.is_int(n) and n > 0
+  throw arr.into_parts.err_div unless utils.is_int(this.length / n)
   m = this.length / n
   splits = []
-  _.times(n, (i) -> splits.push this.slice(m*i, m*(i+1)))
+  that = this
+  _.times(n, (i) -> splits.push that.slice(m*i, m*(i+1)))
   splits
+arr.into_parts.err = new Error "arr.into_parts: non-int or non-pos int
+  parameter"
+arr.into_parts.err_div = new Error "arr.into_parts: argument doesn't divide
+  array length cleanly"
 
 # Shifts the elements of array `this` left `n` times. `n` elements at the
 # beginning of the array are placed at the end (in order).
-arr.shift_left = (n) -> this.slice(n).concat(this.slice(0, n))
+arr.shift_left = (n) ->
+  throw arr.shift_left.err unless utils.is_int(n) and n >= 0
+  n = n % this.length
+  this.slice(n).concat(this.slice(0, n))
+arr.shift_left.err = new Error "arr.shift_left: non-int or neg int parmeter"
 
 
 # Export the collections of functions.

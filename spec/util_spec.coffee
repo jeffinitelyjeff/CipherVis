@@ -411,3 +411,67 @@ describe "Array utilities", ->
       expect(-> a1.print(4.3)).toThrow e
       expect(-> a3.print(-5.4)).toThrow e
 
+  describe "peek", ->
+
+    it "should work", ->
+      expect([1,2,3,9].peek()).toEqual 9
+      expect([9,2,1].peek()).toEqual 1
+      expect([].peek()).toBeUndefined()
+      expect(["1", "a"].peek()).toEqual "a"
+
+  describe "into_parts", ->
+
+    a = [0...24]
+
+    it "should split correctly", ->
+      expect(a.into_parts(1)).toEqual [[0...24]]
+      expect(a.into_parts(2)).toEqual [[0...12], [12...24]]
+      expect(a.into_parts(3)).toEqual [[0...8], [8...16], [16...24]]
+      expect(a.into_parts(4)).toEqual [[0...6], [6...12], [12...18], [18...24]]
+      expect(a.into_parts(6)).toEqual [[0...4], [4...8], [8...12], [12...16], [16...20], [20...24]]
+      expect(a.into_parts(8)).toEqual [[0...3], [3...6], [6...9], [9...12], [12...15], [15...18], [18...21], [21...24]]
+      expect(a.into_parts(12)).toEqual [[0,1], [2,3], [4,5], [6,7], [8,9], [10,11], [12,13], [14,15], [16,17], [18,19], [20,21], [22,23]]
+      expect(a.into_parts(24)).toEqual _.map([0...24], (x) -> [x])
+
+    it "should throw error with non-int or non-pos int input", ->
+      e = arr.into_parts.err
+      expect(-> a.into_parts("a")).toThrow e
+      expect(-> a.into_parts(5.3)).toThrow e
+      expect(-> a.into_parts(-4)).toThrow e
+      expect(-> a.into_parts(0)).toThrow e
+
+    it "should throw error with argument not dividing length", ->
+      e = arr.into_parts.err_div
+      expect(-> a.into_parts(5)).toThrow e
+      expect(-> a.into_parts(7)).toThrow e
+      expect(-> a.into_parts(25)).toThrow e
+      expect(-> a.into_parts(100)).toThrow e
+
+  describe "shift_left", ->
+
+    a = [0,0,0,1,0,0,1,1]
+
+    it "should throw error with non-int or neg int input", ->
+      e = arr.shift_left.err
+      expect(-> a.shift_left(-1)).toThrow e
+      expect(-> a.shift_left(8.9)).toThrow e
+      expect(-> a.shift_left(-5.3)).toThrow e
+      expect(-> a.shift_left("a")).toThrow e
+
+    it "should work with simple shifts", ->
+      expect(a.shift_left 0).toEqual a
+      expect(a.shift_left 1).toEqual [0,0,1,0,0,1,1,0]
+      expect(a.shift_left 2).toEqual a.shift_left(1).shift_left(1)
+      expect(a.shift_left 2).toEqual [0,1,0,0,1,1,0,0]
+      expect(a.shift_left 3).toEqual a.shift_left(2).shift_left(1)
+      expect(a.shift_left 3).toEqual a.shift_left(1).shift_left(2)
+      expect(a.shift_left 3).toEqual a.shift_left(1).shift_left(1).shift_left(1)
+      expect(a.shift_left 4).toEqual a.shift_left(2).shift_left(2)
+      expect(a.shift_left 5).toEqual a.shift_left(2).shift_left(3)
+
+    it "should work when the parameter is high", ->
+      expect(a.shift_left 8).toEqual a.shift_left(0)
+      expect(a.shift_left 9).toEqual a.shift_left(1)
+      expect(a.shift_left 35).toEqual a.shift_left(3)
+
+
