@@ -48,15 +48,15 @@ describe "String utilities", ->
 
   _.each(root.str, (f, name) -> String.prototype[name] = f)
 
-  describe "to_a", ->
+  describe "to_int_a", ->
 
     it "should split into integer arrays", ->
-      expect("11111".to_a()).toEqual([1,1,1,1,1])
-      expect("4093432".to_a()).toEqual([4,0,9,3,4,3,2])
+      expect("11111".to_int_a()).toEqual([1,1,1,1,1])
+      expect("4093432".to_int_a()).toEqual([4,0,9,3,4,3,2])
 
     it "shouldn't split into string arrays", ->
-      expect("11111".to_a()).not.toEqual(["1","1","1","1","1"])
-      expect("4093432".to_a()).not.toEqual(["4","0","9","3","4","3","2"])
+      expect("11111".to_int_a()).not.toEqual(["1","1","1","1","1"])
+      expect("4093432".to_int_a()).not.toEqual(["4","0","9","3","4","3","2"])
 
   describe "reverse", ->
 
@@ -161,27 +161,27 @@ describe "String utilities", ->
   describe "to_bin_array", ->
 
     it "should convert hex digits", ->
-      expect("0".to_bin_array()).toEqual "0000".to_a()
-      expect("1".to_bin_array()).toEqual "0001".to_a()
-      expect("2".to_bin_array()).toEqual "0010".to_a()
-      expect("3".to_bin_array()).toEqual "0011".to_a()
-      expect("4".to_bin_array()).toEqual "0100".to_a()
-      expect("5".to_bin_array()).toEqual "0101".to_a()
-      expect("6".to_bin_array()).toEqual "0110".to_a()
-      expect("7".to_bin_array()).toEqual "0111".to_a()
-      expect("8".to_bin_array()).toEqual "1000".to_a()
-      expect("9".to_bin_array()).toEqual "1001".to_a()
-      expect("A".to_bin_array()).toEqual "1010".to_a()
-      expect("B".to_bin_array()).toEqual "1011".to_a()
-      expect("C".to_bin_array()).toEqual "1100".to_a()
-      expect("D".to_bin_array()).toEqual "1101".to_a()
-      expect("E".to_bin_array()).toEqual "1110".to_a()
-      expect("F".to_bin_array()).toEqual "1111".to_a()
+      expect("0".to_bin_array()).toEqual "0000".to_int_a()
+      expect("1".to_bin_array()).toEqual "0001".to_int_a()
+      expect("2".to_bin_array()).toEqual "0010".to_int_a()
+      expect("3".to_bin_array()).toEqual "0011".to_int_a()
+      expect("4".to_bin_array()).toEqual "0100".to_int_a()
+      expect("5".to_bin_array()).toEqual "0101".to_int_a()
+      expect("6".to_bin_array()).toEqual "0110".to_int_a()
+      expect("7".to_bin_array()).toEqual "0111".to_int_a()
+      expect("8".to_bin_array()).toEqual "1000".to_int_a()
+      expect("9".to_bin_array()).toEqual "1001".to_int_a()
+      expect("A".to_bin_array()).toEqual "1010".to_int_a()
+      expect("B".to_bin_array()).toEqual "1011".to_int_a()
+      expect("C".to_bin_array()).toEqual "1100".to_int_a()
+      expect("D".to_bin_array()).toEqual "1101".to_int_a()
+      expect("E".to_bin_array()).toEqual "1110".to_int_a()
+      expect("F".to_bin_array()).toEqual "1111".to_int_a()
 
     it "should convert hex strings", ->
-      expect("66".to_bin_array()).toEqual "01100110".to_a()
-      expect("8A".to_bin_array()).toEqual "10001010".to_a()
-      expect("45BD".to_bin_array()).toEqual "0100010110111101".to_a()
+      expect("66".to_bin_array()).toEqual "01100110".to_int_a()
+      expect("8A".to_bin_array()).toEqual "10001010".to_int_a()
+      expect("45BD".to_bin_array()).toEqual "0100010110111101".to_int_a()
 
   describe "to_vector", ->
 
@@ -226,4 +226,61 @@ describe "String utilities", ->
       expect("CEF".pad(4, 1)).toEqual "1CEF"
       expect("GHJI".pad(4, 1)).toEqual "GHJI"
 
+
+describe "Array utilities", ->
+
+  describe "is_bin", ->
+
+    it "should accept bin arrays", ->
+      expect([1,1,1,1,1,1].is_bin()).toBeTruthy()
+      expect([0,0,0,0,0,0].is_bin()).toBeTruthy()
+      expect([1,0,1,0,0,1].is_bin()).toBeTruthy()
+
+    it "should reject non-bin arrays", ->
+      expect([1,1,1,1,1,2].is_bin()).toBeFalsy()
+      expect([1,2,1,0,1,2].is_bin()).toBeFalsy()
+      expect([0,0,0,0,0,4].is_bin()).toBeFalsy()
+      expect([-1,3,8,6,0,4].is_bin()).toBeFalsy()
+
+    it "should reject non-int arrays", ->
+      expect(["yo", "b", "c"].is_bin()).toBeFalsy()
+      expect([{a: 5, c: 10}, {e: 5}].is_bin()).toBeFalsy()
+      expect(["hi", "there", (x) -> x].is_bin()).toBeFalsy()
+
+  describe "to_int", ->
+
+    it "should clean up positive int arrays", ->
+      expect(["1", "2", "3"].to_int()).toEqual [1,2,3]
+      expect(["0", "0", "0", "0"].to_int()).toEqual [0,0,0,0]
+      expect(["5", "10", "1000", "0"].to_int()).toEqual [5,10,1000,0]
+
+    it "should clean up neg int arrays", ->
+      expect(["-4", "-3"].to_int()).toEqual [-4, -3]
+
+    it "should work with mixed arrays", ->
+      expect(["1", 5, "6", -5, "-10"].to_int()).toEqual [1,5,6,-5,-10]
+
+  describe "to_hex", ->
+
+    it "should work with hex digits", ->
+      expect("0".to_bin_array().to_hex()).toEqual "0"
+      expect("1".to_bin_array().to_hex()).toEqual "1"
+      expect("2".to_bin_array().to_hex()).toEqual "2"
+      expect("3".to_bin_array().to_hex()).toEqual "3"
+      expect("4".to_bin_array().to_hex()).toEqual "4"
+      expect("5".to_bin_array().to_hex()).toEqual "5"
+      expect("6".to_bin_array().to_hex()).toEqual "6"
+      expect("7".to_bin_array().to_hex()).toEqual "7"
+      expect("8".to_bin_array().to_hex()).toEqual "8"
+      expect("9".to_bin_array().to_hex()).toEqual "9"
+      expect("A".to_bin_array().to_hex()).toEqual "A"
+      expect("B".to_bin_array().to_hex()).toEqual "B"
+      expect("C".to_bin_array().to_hex()).toEqual "C"
+      expect("D".to_bin_array().to_hex()).toEqual "D"
+      expect("E".to_bin_array().to_hex()).toEqual "E"
+      expect("F".to_bin_array().to_hex()).toEqual "F"
+
+    it "should work with multiple digits", ->
+      expect("AB032".to_bin_array().to_hex()).toEqual "AB032"
+      expect("AF90DD".to_bin_array().to_hex()).toEqual "AF90DD"
 

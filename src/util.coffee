@@ -39,7 +39,7 @@ utils =
 str = {}
 
 # Convert string `this` to integer array.
-str.to_a = () -> arr.to_int.call(this.split(''))
+str.to_int_a = () -> arr.to_int.call(this.split(''))
 
 # Create copy of string `this` with characters reversed.
 str.reverse = () -> this.split('').reverse().join('')
@@ -75,7 +75,7 @@ str.to_bin = () ->
       _.reduce(this.split(''), ((mem, h) -> mem + str.to_bin.call(h)), '')
 
 # Convert hexadecimal string `this` to binary array.
-str.to_bin_array = () -> str.to_bin.call(this).to_a()
+str.to_bin_array = () -> str.to_int_a.call(str.to_bin.call(this))
 
 # Converts string `this` to an array of integers, split by delimeter `delim`
 # (the default value is `' '`).

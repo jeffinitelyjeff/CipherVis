@@ -4,9 +4,9 @@ src_files:
   - jquery-1.7.1.min.js
   - underscore.js
   - util.js
-  - **/*.js
+  - '*.js'
 
 spec_dir: spec
 
 spec_files:
-  - **/*_spec.js
+  - '*_spec.js'
