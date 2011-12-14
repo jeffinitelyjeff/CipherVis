@@ -346,18 +346,21 @@ describe "Array utilities", ->
     a2 = [5,6,8,1,3,9,1,1,9,0]
     a3 = [0,1,0,0,0,0,1,5,6,8]
 
-    it "should throw error when accessing non-pos position", ->
+    it "should throw error when accessing non-pos int position", ->
       e = arr.collect.err_neg
       expect(-> a1.collect [0]).toThrow e
       expect(-> a2.collect [-1]).toThrow e
       expect(-> a3.collect [-10]).toThrow e
       expect(-> a2.collect [1,5,8,9,0]).toThrow e
       expect(-> a1.collect [5,9,9,-3]).toThrow e
+      expect(-> a1.collect [5.3,1]).toThrow e
+      expect(-> a1.collect [1,3,4,2.9]).toThrow e
 
     it "should handle basic array acess", ->
       expect(a1.collect [1]).toEqual [a1[0]]
       expect(a2.collect [5]).toEqual [a2[4]]
       expect(a3.collect [9]).toEqual [a3[8]]
+      expect(a2.collect [3.0]).toEqual [a2[2]]
 
     it "should collect some basic arrays", ->
       col1 = [1,4,10,9,2]
@@ -369,4 +372,42 @@ describe "Array utilities", ->
       expect([1...100].collect col2).toEqual col2
       expect(a2.collect(col2).length).toEqual col2.length
       expect(a3.collect(col2).length).toEqual col2.length
+
+      col3 = [1.0,4.0,10,9,2.0]
+      expect(a1.collect col1).toEqual [0,3,9,8,1]
+      expect(a2.collect col1).toEqual [5,1,0,9,6]
+      expect(a3.collect col1).toEqual [0,0,8,6,1]
+
+  describe "print", ->
+
+    a1 = [0,0,0,0,0]
+    a2 = [0,1,1,0,1]
+    a3 = [0,0,0,1,1]
+
+    it "should work with no spaces", ->
+      expect(a1.print()).toEqual "00000"
+      expect(a1.print(0)).toEqual "00000"
+      expect(a2.print()).toEqual "01101"
+      expect(a2.print()).toEqual "01101"
+      expect(a3.print()).toEqual "00011"
+      expect(a3.print(0)).toEqual "00011"
+
+    it "should work with pos n", ->
+      expect(a1.print(1)).toEqual "0 0 0 0 0"
+      expect(a2.print(1)).toEqual "0 1 1 0 1"
+      expect(a3.print(1)).toEqual "0 0 0 1 1"
+      expect(a1.print(4)).toEqual "0000 0"
+      expect(a2.print(4)).toEqual "0110 1"
+      expect(a3.print(4)).toEqual "0001 1"
+      expect(a2.print(2.0)).toEqual "01 10 1"
+      expect(a1.concat(a2).concat(a3).print(4)).toEqual "0000 0011 0100 011"
+
+    it "should throw error for invalid n", ->
+      e = arr.print.err
+      expect(-> a1.print(-1)).toThrow e
+      expect(-> a2.print(-10)).toThrow e
+      expect(-> a3.print("A")).toThrow e
+      expect(-> a2.print({a: 5})).toThrow e
+      expect(-> a1.print(4.3)).toThrow e
+      expect(-> a3.print(-5.4)).toThrow e
 

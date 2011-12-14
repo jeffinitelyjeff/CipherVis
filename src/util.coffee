@@ -36,6 +36,10 @@ utils =
   # those details and provides consistency with other `is_` functions.
   is_num: (x) -> typeof x == "number"
 
+  # Determine if variable `x` is an integer.
+  # Adapted from http://stackoverflow.com/q/1019515/722949
+  is_int: (n) -> not isNaN(parseInt(n)) and parseFloat(n) == parseInt(n)
+
 
 ## String utilities ##
 # These are all functions that should be added to `String.prototype`. We use the
@@ -139,20 +143,23 @@ arr.xor.err_diff_len = new Error "arr.xor: operands have different length"
 # `this`. Indices in `idxs` are 1-indexed (first element has index 1).
 arr.collect = (idxs) ->
   _.map(idxs, (i) =>
-    throw arr.collect.err_neg unless utils.is_num(i) and i > 0
+    throw arr.collect.err_neg unless utils.is_int(i) and i > 0
     this[i-1]
   )
-arr.collect.err_neg = new Error "arr.collect: non-pos int encountered"
+arr.collect.err_neg = new Error "arr.collect: encountered a non-pos int or non-int"
 
 # Forms a prettified string representation of array `this`. If `n` is
 # provided, will insert a space every `n` characters.
 arr.print = (n = 0) ->
-  that = []
+  throw arr.print.err unless utils.is_int(n) and n >= 0
+  that = this
+  a = []
   _.each(this, (e, i) ->
-    that.push e
-    that.push(' ') if (i+1) % n == 0
+    a.push e
+    a.push(' ') if (i+1) % n == 0 and i != that.length - 1
   )
-  that.join('')
+  a.join('')
+arr.print.err = new Error "arr.print: invalid argument (needs to be non-neg int)"
 
 # Returns the last element of array `this`.
 arr.peek = () -> this[this.length - 1]
