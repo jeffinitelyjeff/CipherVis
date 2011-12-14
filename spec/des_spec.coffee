@@ -147,11 +147,11 @@ describe "Rounds", ->
         bs = "0101 1100 1000 0010 1011 0101 1001 0111"
         bs = _.map(bs.split(' '), (b) -> b.to_int_a())
 
-        expect(lookup_s_box(1, as[0])).toEqual bs[0]
-        expect(lookup_s_box(2, as[1])).toEqual bs[1]
-        expect(lookup_s_box(3, as[2])).toEqual bs[2]
-        expect(lookup_s_box(4, as[3])).toEqual bs[3]
-        expect(lookup_s_box(5, as[4])).toEqual bs[4]
-        expect(lookup_s_box(6, as[5])).toEqual bs[5]
-        expect(lookup_s_box(7, as[6])).toEqual bs[6]
-        expect(lookup_s_box(8, as[7])).toEqual bs[7]
+        expect(lookup_s_box(0, as[0])).toEqual bs[0]
+        expect(lookup_s_box(1, as[1])).toEqual bs[1]
+        expect(lookup_s_box(2, as[2])).toEqual bs[2]
+        expect(lookup_s_box(3, as[3])).toEqual bs[3]
+        expect(lookup_s_box(4, as[4])).toEqual bs[4]
+        expect(lookup_s_box(5, as[5])).toEqual bs[5]
+        expect(lookup_s_box(6, as[6])).toEqual bs[6]
+        expect(lookup_s_box(7, as[7])).toEqual bs[7]

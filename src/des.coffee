@@ -137,7 +137,7 @@ s_boxes = _([
 # binary string of the value at that position of the specified s-box.
 get_s_box = (n, r, c) -> s_boxes[n][16*r + c].toString(2)
 
-# Looks up S box value for 6-digit binary array `b`.
+# Looks up S box value for 6-digit binary array `b` in S box `n` (0-indexed).
 lookup_s_box = (n, b) ->
 
   # Get the row in the s-box.
