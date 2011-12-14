@@ -298,6 +298,12 @@ describe "Array utilities", ->
       expect("AB032".to_ba().to_hex()).toEqual "AB032"
       expect("AF90DD".to_ba().to_hex()).toEqual "AF90DD"
 
+    it "non-binary array should throw error", ->
+      e = arr.to_hex.err_bin
+      expect(-> [1,-5].to_hex()).toThrow e
+      expect(-> [0,1,1,"A"].to_hex()).toThrow e
+      expect(-> [0,1,2].to_hex()).toThrow e
+
   describe "xor", ->
 
     it "should xor digits properly", ->
@@ -334,3 +340,32 @@ describe "Array utilities", ->
       expect(() -> [1].xor([2])).toThrow e
       expect(() -> [0,0,1].xor(["hi", -5, 0])).toThrow e
 
+  describe "collect", ->
+
+    a1 = [0,1,2,3,4,5,6,7,8,9]
+    a2 = [5,6,8,1,3,9,1,1,9,0]
+    a3 = [0,1,0,0,0,0,1,5,6,8]
+
+    it "should throw error when accessing non-pos position", ->
+      e = arr.collect.err_neg
+      expect(-> a1.collect [0]).toThrow e
+      expect(-> a2.collect [-1]).toThrow e
+      expect(-> a3.collect [-10]).toThrow e
+      expect(-> a2.collect [1,5,8,9,0]).toThrow e
+      expect(-> a1.collect [5,9,9,-3]).toThrow e
+
+    it "should handle basic array acess", ->
+      expect(a1.collect [1]).toEqual a1[0]
+      expect(a2.collect [5]).toEqual a2[4]
+      expect(a3.collect [9]).toEqual a3[8]
+
+    it "should collect some basic arrays", ->
+      col1 = [1,4,10,9,2]
+      expect(a1.collect col1).toEqual [0,3,9,8,1]
+      expect(a2.collect col1).toEqual [5,1,0,9,6]
+      expect(a3.collect col1).toEqual [0,0,8,6,1]
+
+      col2 = [5..59]
+      expect(a1.collect col2).toEqual col2
+      expect(a2.collect(col2).length).toEqual col2.length
+      expect(a3.collect(col2).length).toEqual col3.length

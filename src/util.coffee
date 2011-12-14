@@ -80,12 +80,15 @@ str.to_bin = () ->
       '0000'.slice(s.length) + s
     else
       _.reduce(this.split(''), ((mem, h) -> mem + str.to_bin.call(h)), '')
+str.to_bin.err_char = new Error "str.to_bin: invalid hex char"
 # Shorthand for `str.to_bin`.
 str.to_b = str.to_bin
-str.to_bin.err_char = new Error "str.to_bin: invalid hex char"
 
 # Convert hexadecimal string `this` to binary array.
-str.to_bin_array = () -> str.to_int_a.call(str.to_bin.call(this))
+str.to_bin_array = () ->
+  throw str.to_bin_array.err_hex unless str.is_hex.call(this)
+  str.to_int_a.call(str.to_bin.call(this))
+str.to_bin_array.err_hex = new Error "str.to_bin_array: string not hex"
 # Shorthand for `str.to_bin_array`.
 str.to_ba = str.to_bin_array
 
@@ -116,7 +119,10 @@ arr.is_bin = () -> _.all(this, (d) -> utils.is_num(d) and (d == 0 or d == 1))
 arr.to_int = () -> _.map(this, (x) -> parseInt(x))
 
 # Convert binary array `this` to hexadecimal string.
-arr.to_hex = () -> parseInt(this.join(''), 2).toString(16).toUpperCase()
+arr.to_hex = () ->
+  throw arr.to_hex.err_bin unless arr.is_bin.call(this)
+  parseInt(this.join(''), 2).toString(16).toUpperCase()
+arr.to_hex.err_bin = new Error "arr.to_hex: array is not binary"
 
 # Create an array which is the bitwise (element-wise) xor of arrays `this` and
 # `that`. Assumes `this` and `that` are both binary arrays.
@@ -131,7 +137,12 @@ arr.xor.err_diff_len = new Error "arr.xor: operands have different length"
 
 # Create an array that is the specified indices `idxs` of array
 # `this`. Indices in `idxs` are 1-indexed (first element has index 1).
-arr.collect = (idxs) -> _.map(idxs, (i) -> this[i-1])
+arr.collect = (idxs) ->
+  _.map(idxs, (i) ->
+    throw arr.collect.err_neg unless i > 0
+    this[i-1]
+  )
+arr.collect.err_neg = new Error "arr.collect: non-pos int encountered"
 
 # Forms a prettified string representation of array `this`. If `n` is
 # provided, will insert a space every `n` characters.
