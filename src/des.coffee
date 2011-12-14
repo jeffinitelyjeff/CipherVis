@@ -264,7 +264,7 @@ des = (k_hex, p_hex) ->
   rounded = rounds(ip, ks)
 
   # Final permutation (64 bits → 64 bits).
-  ip1 = rounded.perm_ip1()
+  ip1 = rounded.perm_ipinv()
   log "ip^{-1}: #{ip1.print(4)}" # FIXME
 
   # Binary -> hex.
