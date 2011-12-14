@@ -11,7 +11,7 @@ _.each(root.arr, (f, name) -> Array.prototype[name] = f)
 ### Permutations tables ###
 _({
 
-    # Permuted choice 1 (PC-1). 64 bits --> 56 bits.
+    # Permuted choice 1 (PC-1). 64 bits → 56 bits.
     pc1: "57  49  41  33  25  17   9
            1  58  50  42  34  26  18
           10   2  59  51  43  35  27
@@ -21,7 +21,7 @@ _({
           14   6  61  53  45  37  29
           21  13   5  28  20  12   4"
 
-    # Permuted choice 2 (PC-2). 56 bits --> 48 bits.
+    # Permuted choice 2 (PC-2). 56 bits → 48 bits.
     pc2: "14  17  11  24   1   5
            3  28  15   6  21  10
           23  19  12   4  26   8
@@ -31,7 +31,7 @@ _({
           44  49  39  56  34  53
           46  42  50  36  29  32"
 
-    # Initial permutation (IP). 64 bits --> 64 bits.
+    # Initial permutation (IP). 64 bits → 64 bits.
     ip: "58  50  42  34  26  18  10  2
          60  52  44  36  28  20  12  4
          62  54  46  38  30  22  14  6
@@ -41,7 +41,7 @@ _({
          61  53  45  37  29  21  13  5
          63  55  47  39  31  23  15  7"
 
-    # Final permutation (IP^-1). Inverse of IP. 64 bits --> 64 bits.
+    # Final permutation (IP^-1). Inverse of IP. 64 bits → 64 bits.
     ipinv: "40  8  48  16  56  24  64  32
             39  7  47  15  55  23  63  31
             38  6  46  14  54  22  62  30
@@ -51,7 +51,7 @@ _({
             34  2  42  10  50  18  58  26
             33  1  41   9  49  17  57  25"
 
-    # Expansion function (E). 32 bits --> 48 bits.
+    # Expansion function (E). 32 bits → 48 bits.
     e: "32   1   2   3   4   5
          4   5   6   7   8   9
          8   9  10  11  12  13
@@ -61,7 +61,7 @@ _({
         24  25  26  27  28  29
         28  29  30  31  32   1"
 
-    # Permutation (P). 32 bits --> 32 bits.
+    # Permutation (P). 32 bits → 32 bits.
     p: "16   7  20  21
         29  12  28  17
          1  15  23  26
@@ -156,17 +156,17 @@ lookup_s_box = (n, b) ->
 # generate the next right half).
 feistel = (r, k) ->
 
-  # Expansion (32 bits --> 48 bits).
+  # Expansion (32 bits → 48 bits).
   e = r.perm_e()
 
   # Key mixing.
   x = e.xor(k)
 
-  # Substitution (48 bits --> 32 bits).
+  # Substitution (48 bits → 32 bits).
   sixes = x.into_parts(8)
   ss = _.flatten(_.map(sixes, (six, iter) -> lookup_s_box(iter, six)))
 
-  # Permutation (32 bits --> 32 bits).
+  # Permutation (32 bits → 32 bits).
   return ss.perm_p()
 
 
@@ -246,14 +246,14 @@ des = (k_hex, p_hex) ->
   log "k: #{k_hex}" # FIXME
   log "p: #{p_hex}" # FIXME
 
-  # Hex --> binary.
+  # Hex → binary.
   k = k_hex.to_bin_array()
   p = p_hex.to_bin_array()
 
   log "k: #{k.print(4)}" # FIXME
   log "p: #{p.print(4)}" # FIXME
 
-  # Initial permutation (64 bits --> 64 bits).
+  # Initial permutation (64 bits → 64 bits).
   ip = p.perm_ip()
   log "ip: #{ip.print(4)}" # FIXME
 
@@ -263,7 +263,7 @@ des = (k_hex, p_hex) ->
   # Perform rounds.
   rounded = rounds(ip, ks)
 
-  # Final permutation (64 bits --> 64 bits).
+  # Final permutation (64 bits → 64 bits).
   ip1 = rounded.perm_ip1()
   log "ip^{-1}: #{ip1.print(4)}" # FIXME
 

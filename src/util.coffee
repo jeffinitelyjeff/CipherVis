@@ -187,6 +187,7 @@ arr.shift_left = (n) ->
 arr.shift_left.err = new Error "arr.shift_left: non-int or neg int parmeter"
 
 
+
 # Export the collections of functions.
 root.utils = utils
 root.str = str

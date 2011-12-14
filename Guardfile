@@ -4,7 +4,7 @@ end
 
 guard 'shell' do
   watch /^src\/.+\.coffee$/ do |m|
-    `docco #{m[0]}`
+    `docco src/*.coffee`
     puts "Generated documentation for #{m[0]}"
   end
 end
