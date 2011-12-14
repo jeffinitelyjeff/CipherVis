@@ -138,8 +138,8 @@ arr.xor.err_diff_len = new Error "arr.xor: operands have different length"
 # Create an array that is the specified indices `idxs` of array
 # `this`. Indices in `idxs` are 1-indexed (first element has index 1).
 arr.collect = (idxs) ->
-  _.map(idxs, (i) ->
-    throw arr.collect.err_neg unless i > 0
+  _.map(idxs, (i) =>
+    throw arr.collect.err_neg unless utils.is_num(i) and i > 0
     this[i-1]
   )
 arr.collect.err_neg = new Error "arr.collect: non-pos int encountered"

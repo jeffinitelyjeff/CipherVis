@@ -21,3 +21,6 @@ guard 'sass', :output => 'public' do
   watch /^src\/.+\.sass$/
 end
 
+# guard 'jasmine' do
+#   watch /^spec\/.+\.js$/
+# end

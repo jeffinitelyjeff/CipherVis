@@ -355,9 +355,9 @@ describe "Array utilities", ->
       expect(-> a1.collect [5,9,9,-3]).toThrow e
 
     it "should handle basic array acess", ->
-      expect(a1.collect [1]).toEqual a1[0]
-      expect(a2.collect [5]).toEqual a2[4]
-      expect(a3.collect [9]).toEqual a3[8]
+      expect(a1.collect [1]).toEqual [a1[0]]
+      expect(a2.collect [5]).toEqual [a2[4]]
+      expect(a3.collect [9]).toEqual [a3[8]]
 
     it "should collect some basic arrays", ->
       col1 = [1,4,10,9,2]
@@ -366,6 +366,7 @@ describe "Array utilities", ->
       expect(a3.collect col1).toEqual [0,0,8,6,1]
 
       col2 = [5..59]
-      expect(a1.collect col2).toEqual col2
+      expect([1...100].collect col2).toEqual col2
       expect(a2.collect(col2).length).toEqual col2.length
-      expect(a3.collect(col2).length).toEqual col3.length
+      expect(a3.collect(col2).length).toEqual col2.length
+
