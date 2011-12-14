@@ -1,12 +1,13 @@
 root = exports ? this
-
-_.each(root.arr, (f, name) -> Array.prototype[name] f)
+utils = root.utils
+str = root.str
+arr = root.arr
 
 describe "Misc. utilities", ->
 
-  is_string = root.utils.is_string
-  is_array = root.utils.is_array
-  is_num = root.utils.is_num
+  is_string = utils.is_string
+  is_array = utils.is_array
+  is_num = utils.is_num
 
   describe "is_string", ->
 
@@ -46,7 +47,7 @@ describe "Misc. utilities", ->
 
 describe "String utilities", ->
 
-  _.each(root.str, (f, name) -> String.prototype[name] = f)
+  _.each(str, (f, name) -> String.prototype[name] = f)
 
   describe "to_int_a", ->
 
@@ -158,6 +159,17 @@ describe "String utilities", ->
       expect("8A".to_bin()).toEqual "10001010"
       expect("45BD".to_bin()).toEqual "0100010110111101"
 
+    it "should throw error with non-hex chars", ->
+      e = str.to_bin.err_char
+      expect( -> "J".to_bin()).toThrow e
+      expect( -> "-1".to_bin()).toThrow e
+      expect( -> "-A".to_bin()).toThrow e
+
+    it "should throw error with non-hex strings", ->
+      e = str.to_bin.err_char
+      expect( -> "JA65EF".to_bin()).toThrow e
+      expect( -> "AB0532Q".to_bin()).toThrow e
+
   describe "to_bin_array", ->
 
     it "should convert hex digits", ->
@@ -228,6 +240,8 @@ describe "String utilities", ->
 
 
 describe "Array utilities", ->
+
+  _.each(arr, (f, name) -> Array.prototype[name] = f)
 
   describe "is_bin", ->
 
@@ -300,7 +314,23 @@ describe "Array utilities", ->
       expect([1,0,0,1,1].xor([1,0,1,1,1])).toEqual [0,0,1,0,0]
       expect([1,1,1,1,1,0,0].xor([0,0,1,1,1,0,1])).toEqual [1,1,0,0,0,0,1]
 
-    it "should throw error with non-bin first operand", ->
-      expect(() -> [2].xor([0])).toThrow Error
+    it "should throw error with diff length operands", ->
+      e = arr.xor.err_diff_len
+      expect(() -> [1].xor([0,0])).toThrow e
+      expect(() -> [1,0].xor([0])).toThrow e
+      expect(() -> [1,1,0,0,0,0,1,0,0].xor([0,0,1,0,1,1])).toThrow e
+      expect(() -> [2,2,2].xor([0,0])).toThrow e
+      expect(() -> [3,2,5].xor([1,6])).toThrow e
+      expect(() -> [0,1,0,0].xor([5])).toThrow e
 
+    it "should throw error with non-bin first operand", ->
+      e = arr.xor.err_op1
+      expect(() -> [2].xor([0])).toThrow e
+      expect(() -> [2,1,0,0,0,1].xor([3,3,4,5,"hi",-5])).toThrow e
+
+    it "should throw error with non-bin second operand", ->
+      e = arr.xor.err_op2
+      expect(() -> [1,1,0].xor([2,2,2])).toThrow e
+      expect(() -> [1].xor([2])).toThrow e
+      expect(() -> [0,0,1].xor(["hi", -5, 0])).toThrow e
 

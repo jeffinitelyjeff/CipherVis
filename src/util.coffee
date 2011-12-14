@@ -8,7 +8,8 @@ log = (s) ->
   console.log(s)
   return s
 
-# Faster error syntax.
+# Faster error syntax. Probably won't use this much because anonymous errors are
+# harder to test against.
 err = (s) ->
   throw new Error(s)
 
@@ -74,13 +75,14 @@ str.to_bin = () ->
   switch this.length
     when 0 then ''
     when 1
-      err("str.to_bin: invalid hex char") unless str.is_hex.call(this)
+      throw str.to_bin.err_char unless str.is_hex.call(this)
       s = parseInt(this, 16).toString(2)
       '0000'.slice(s.length) + s
     else
       _.reduce(this.split(''), ((mem, h) -> mem + str.to_bin.call(h)), '')
 # Shorthand for `str.to_bin`.
 str.to_b = str.to_bin
+str.to_bin.err_char = new Error "str.to_bin: invalid hex char"
 
 # Convert hexadecimal string `this` to binary array.
 str.to_bin_array = () -> str.to_int_a.call(str.to_bin.call(this))
@@ -119,10 +121,13 @@ arr.to_hex = () -> parseInt(this.join(''), 2).toString(16).toUpperCase()
 # Create an array which is the bitwise (element-wise) xor of arrays `this` and
 # `that`. Assumes `this` and `that` are both binary arrays.
 arr.xor = (that) ->
-  err("arr.xor: 1st xor operand not binary") unless arr.is_bin.call(this)
-  err("arr.xor: 2nd xor operand not binary") unless arr.is_bin.call(that)
-  err("arr.xor: operands have diff lengths") unless this.length == that.length
+  throw arr.xor.err_diff_len unless this.length == that.length
+  throw arr.xor.err_op1 unless arr.is_bin.call(this)
+  throw arr.xor.err_op2 unless arr.is_bin.call(that)
   _.map(_.zip(this, that), (x) -> x[0] ^ x[1])
+arr.xor.err_op1 = new Error "arr.xor: 1st operand not binary"
+arr.xor.err_op2 = new Error "arr.xor: 2nd operand not binary"
+arr.xor.err_diff_len = new Error "arr.xor: operands have different length"
 
 # Create an array that is the specified indices `idxs` of array
 # `this`. Indices in `idxs` are 1-indexed (first element has index 1).
