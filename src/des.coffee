@@ -154,20 +154,25 @@ lookup_s_box = (n, b) ->
 # Given the right half of a round `r` and the next subkey `k`, compute the
 # Fiestel function (which will be xor'ed with `r`'s matching left half to
 # generate the next right half).
-feistel = (r, k) ->
+feistel = (r, k, results = {es: [], mixes: [], sboxes: [], ps: []}) ->
 
   # Expansion (32 bits → 48 bits).
   e = r.perm_e()
+  results.es.push e
 
   # Key mixing.
   x = e.xor(k)
+  results.mixes.push x
 
   # Substitution (48 bits → 32 bits).
   sixes = x.into_parts(8)
   ss = _.flatten(_.map(sixes, (six, iter) -> lookup_s_box(iter, six)))
+  results.sboxes.push ss
 
   # Permutation (32 bits → 32 bits).
-  return ss.perm_p()
+  pp = ss.perm_p()
+  results.ps.push pp
+  return pp
 
 
 ### Subkey generation ###
@@ -227,10 +232,15 @@ rounds = (ip, ks, results = {}) ->
   # Initialize the halves with the initial permutation (64-bits) split in half.
   [l, r] = [[ip.slice(0, 32)], [ip.slice(32)]]
 
+  results.es = []
+  results.mixes = []
+  results.sboxes = []
+  results.ps = []
+
   _.times(16, (i) ->
     [l_prev, r_prev] = [l.peek(), r.peek()]
     l.push r_prev
-    r.push l_prev.xor(feistel(r_prev, ks[i]))
+    r.push l_prev.xor(feistel(r_prev, ks[i], results))
   )
 
   [results.l, results.r] = [l, r]
@@ -254,9 +264,13 @@ des = (k_hex, p_hex) ->
   # - `k_pc1`: permuted choice of key.
   # - `cd`: shifted subkeys (without pc2).
   # - `ks`: pc2'ed, i.e. real, subkeys.
+  # - `es`: `e` permutations from rounds.
+  # - `mixes`: results of mixing `e`s with subkeys.
+  # - `sboxes`: results of passing `mixes` through sboxes.
+  # - `ps`: `p` permutations from rounds (result of Feistel fn).
   # - `l`: left half of rounds results.
   # - `r`: right half of rounds results.
-  # - `rounded`: the final result of the rounds (last `r` concat with last `l`)
+  # - `rounded`: the final result of the rounds (last `r` concat with last `l`).
   # - `c`: final ciphertext as binary array.
   # - `c_hex`: final ciphertext as hex string.
   r = {}
