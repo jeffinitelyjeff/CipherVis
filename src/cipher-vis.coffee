@@ -59,5 +59,5 @@ $(document).ready ->
 
   if DEBUG
     # Set defaults
-    $("#key").val("133457799BBCDFF1")
+    $("#key").val("3B3898371520F75E")
     $("#plaintext").val("0123456789ABCDEF")
