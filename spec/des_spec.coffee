@@ -20,6 +20,8 @@ describe "Permutations", ->
 
   describe "PC2", ->
 
+    # Examples from http://orlingrabbe.com/des.htm
+
     it "should work with this example", ->
 
       a = "1110000 1100110 0101010 1011111 1010101 0110011 0011110 0011110".clean()
@@ -43,6 +45,46 @@ describe "Permutations", ->
       a = "00110011001010101011111111000101100110011110001111010101".clean()
       b = "011100 101010 110111 010110 110110 110011 010100 011101".clean()
       expect(a.perm_pc2()).toEqual b
+
+  describe "IP", ->
+
+    it "should work with this example", ->
+
+      # Example from http://orlingrabbe.com/des.htm
+
+      a = "0000 0001 0010 0011 0100 0101 0110 0111 1000 1001 1010 1011 1100 1101 1110 1111".clean()
+      b = "1100 1100 0000 0000 1100 1100 1111 1111 1111 0000 1010 1010 1111 0000 1010 1010".clean()
+      expect(a.perm_ip()).toEqual b
+
+  describe "E", ->
+
+    it "should work with this example", ->
+
+      # Example from http://orlingrabbe.com/des.htm
+
+      a = "1111 0000 1010 1010 1111 0000 1010 1010".clean()
+      b = "011110 100001 010101 010101 011110 100001 010101 010101".clean()
+      expect(a.perm_e()).toEqual b
+
+  describe "P", ->
+
+    it "should work with this example", ->
+
+      # Example from http://orlingrabbe.com/des.htm
+
+      a = "0101 1100 1000 0010 1011 0101 1001 0111".clean()
+      b = "0010 0011 0100 1010 1010 1001 1011 1011".clean()
+      expect(a.perm_p()).toEqual b
+
+  describe "IPINV", ->
+
+    it "should work with this example", ->
+
+      # Example from http://orlingrabbe.com/des.htm
+
+      a = "00001010 01001100 11011001 10010101 01000011 01000010 00110010 00110100".clean()
+      b = "10000101 11101000 00010011 01010100 00001111 00001010 10110100 00000101".clean()
+      expect(a.perm_ipinv()).toEqual b
 
 
 describe "Subkey Generation", ->

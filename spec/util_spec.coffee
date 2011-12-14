@@ -294,6 +294,11 @@ describe "Array utilities", ->
       expect("E".to_ba().to_hex()).toEqual "E"
       expect("F".to_ba().to_hex()).toEqual "F"
 
+    it "should work with this example", ->
+      # Example from http://orlingrabbe.com/des.htm
+      b = "1000010111101000000100110101010000001111000010101011010000000101".to_int_a()
+      expect(b.to_hex()).toEqual "85E813540F0AB405"
+
     it "should work with multiple digits", ->
       expect("AB032".to_ba().to_hex()).toEqual "AB032"
       expect("AF90DD".to_ba().to_hex()).toEqual "AF90DD"
@@ -303,6 +308,12 @@ describe "Array utilities", ->
       expect(-> [1,-5].to_hex()).toThrow e
       expect(-> [0,1,1,"A"].to_hex()).toThrow e
       expect(-> [0,1,2].to_hex()).toThrow e
+
+    it "should throw error with array of improper length", ->
+      e = arr.to_hex.err_div
+      expect(-> [1,0].to_hex()).toThrow e
+      expect(-> [1,0,1,1,1].to_hex()).toThrow e
+      expect(-> [0].to_hex()).toThrow e
 
   describe "xor", ->
 

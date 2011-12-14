@@ -125,8 +125,20 @@ arr.to_int = () -> _.map(this, (x) -> parseInt(x))
 # Convert binary array `this` to hexadecimal string.
 arr.to_hex = () ->
   throw arr.to_hex.err_bin unless arr.is_bin.call(this)
-  parseInt(this.join(''), 2).toString(16).toUpperCase()
+  throw arr.to_hex.err_div unless this.length % 4 == 0
+  bs = []
+  hs = []
+  _.each(this, (b, i) ->
+    if i % 4 == 3
+      bs.push b
+      hs.push parseInt(bs.join(''), 2).toString(16).toUpperCase()
+      bs = []
+    else
+      bs.push b
+  )
+  hs.join('')
 arr.to_hex.err_bin = new Error "arr.to_hex: array is not binary"
+arr.to_hex.err_div = new Error "arr.to_hex: array length not div by 4"
 
 # Create an array which is the bitwise (element-wise) xor of arrays `this` and
 # `that`. Assumes `this` and `that` are both binary arrays.
