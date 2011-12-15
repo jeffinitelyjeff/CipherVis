@@ -111,9 +111,23 @@ display_des_pc1 = ($d, res, callback) ->
   insert $d, "#pc1", ".one", res.k, 4
   insert $d, "#pc1", ".two", res.k_pc1, 4
   $("#subkey-list").show()
-  show($d, "#pc1", -> display_des_split($d, res, callback))
+  show $d, "#pc1", -> display_des_split($d, res, callback)
 
 display_des_split = ($d, res, callback) ->
   insert $d, "#split", ".one", res.cd[0].slice(0, 28), 4
   insert $d, "#split", ".two", res.cd[0].slice(28), 4
-  show($d, "#split", -> return)
+  show $d, "#split", -> display_des_shift(1, $d, res, callback)
+
+display_des_shift = (i, $d, res, callback) ->
+  if i == 16
+    f = -> display_des_pc2(0, $d, res, callback)
+  else
+    f = -> display_des_shift(i+1, $d, res, callback)
+
+  insert $d, "#shift#{i}", ".one", res.cd[i].slice(0, 28), 4
+  insert $d, "#shift#{i}", ".two", res.cd[i].slice(28), 4
+  show $d, "#shift#{i}", f
+
+display_des_pc2 = (i, $d, res, callback) ->
+  return
+
