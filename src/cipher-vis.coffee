@@ -58,9 +58,9 @@ $(document).ready ->
       $("#error").fadeOut(500, () -> $(this).text(""))
 
       results = des(k, p)
-
-      $("#display > #binary").fadeIn(1000).find(".spacer").slideUp(1000)
       $("#ciphertext").text results.c_hex
+
+      display_des($("#display"), results, -> return)
 
   $("#plaintext, #key").keydown (e) -> $("#encipher").click() if e.keyCode == 13
 
@@ -68,3 +68,25 @@ $(document).ready ->
     # Set defaults
     $("#key").val("3B3898371520F75E")
     $("#plaintext").val("0123456789ABCDEF")
+
+show = ($d, id, callback) ->
+  t = 500
+  $d.find(id).fadeIn(t).children(".step").fadeIn(t).end()
+    .children(".spacer").slideUp(t, callback)
+
+display_des = ($d, res, callback) ->
+  display_des_binary($d, res, callback)
+
+display_des_binary = ($d, res, callback) ->
+  show($d, "#binary", -> display_des_ip($d, res, callback))
+
+display_des_ip = ($d, res, callback) ->
+  show($d, "#ip", -> display_des_subkeys($d, res, callback))
+
+display_des_subkeys = ($d, res, callback) ->
+  show($d, "#subkeys", -> display_des_pc1($d, res, callback))
+
+display_des_pc1 = ($d, res, callback) ->
+  show($d, "#subkeys", -> return)
+
+
