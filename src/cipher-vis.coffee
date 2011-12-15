@@ -69,14 +69,24 @@ $(document).ready ->
     $("#key").val("3B3898371520F75E")
     $("#plaintext").val("0123456789ABCDEF")
 
-show = ($d, id, callback) ->
-  t = show.t
-  $d.find(id).fadeIn(t).children(".step").fadeIn(t)
-    .end().children(".spacer").slideUp(t, ->
-      $d.find(id).find(".code_line").fadeIn(t / 2, callback)
-    )
-show.t = 1000
+## Display helpers ##
 
+# Reveal a step by sliding it up.
+show = ($d, id, callback, t = show.default_t) ->
+  $d.find(id).fadeIn(t).children(".step").fadeIn(t).end()
+    .children(".spacer").slideUp(t, callback)
+show.default_t = 1000
+
+# Reveal a step and contained code.
+show_code = ($d, id, callback, t = show.default_t, t2 = show_code.default_t2) ->
+  show $d, id, ( ->
+    $d.find(id).find(".code_line").fadeIn(t2, callback)
+    callback()
+  ), t
+show_code.default_t2 = show.default_t / 2
+
+# Handles placing text in code boxes such that it's spaced properly (does this
+# by actually inserting several spans).
 insert = ($d, id, cl, text, num) ->
   if root.utils.is_string(text)
     text = text.split('')
@@ -87,47 +97,52 @@ insert = ($d, id, cl, text, num) ->
   $d.find(id).find(cl).empty().append(spans)
   $(spans).show()
 
+## Display steps ##
+
 display_des = ($d, res, callback) ->
   display_des_binary($d, res, callback)
 
 display_des_binary = ($d, res, callback) ->
   insert $d, "#binary", ".one", res.p_hex, 1
   insert $d, "#binary", ".two", res.p, 4
-  show $d, "#binary", -> display_des_ip($d, res, callback)
+  show_code $d, "#binary", -> display_des_ip($d, res, callback)
 
 display_des_ip = ($d, res, callback) ->
   insert $d, "#ip", ".one", res.p, 4
   insert $d, "#ip", ".two", res.ip, 4
-  show $d, "#ip", -> display_des_subkeys($d, res, callback)
+  show_code $d, "#ip", -> display_des_subkeys($d, res, callback)
 
 display_des_subkeys = ($d, res, callback) ->
-  t = show.t
-  $d.find("#subkeys").fadeIn(t).children(".step").fadeIn(t)
-    .end().children(".spacer").slideUp(1000, ->
-      display_des_pc1($d, res, callback)
-    )
+  show $d, "#subkeys", -> display_des_pc1($d, res, callback)
 
 display_des_pc1 = ($d, res, callback) ->
   insert $d, "#pc1", ".one", res.k, 4
   insert $d, "#pc1", ".two", res.k_pc1, 4
   $("#subkey-list").show()
-  show $d, "#pc1", -> display_des_split($d, res, callback)
+  show_code $d, "#pc1", -> display_des_split($d, res, callback)
 
 display_des_split = ($d, res, callback) ->
   insert $d, "#split", ".one", res.cd[0].slice(0, 28), 4
   insert $d, "#split", ".two", res.cd[0].slice(28), 4
-  show $d, "#split", -> display_des_shift(1, $d, res, callback)
+  show_code $d, "#split", -> display_des_shifts($d, res, callback)
+
+display_des_shifts = ($d, res, callback) ->
+  show $d, "#shifts", -> display_des_shift(1, $d, res, callback)
 
 display_des_shift = (i, $d, res, callback) ->
   if i == 16
-    f = -> display_des_pc2(0, $d, res, callback)
+    f = ->
+      display_des_pc2s($d, res, callback)
+      callback()
   else
-    f = -> display_des_shift(i+1, $d, res, callback)
+    f = ->
+      display_des_shift(i+1, $d, res, callback)
+      callback()
 
   insert $d, "#shift#{i}", ".one", res.cd[i].slice(0, 28), 4
   insert $d, "#shift#{i}", ".two", res.cd[i].slice(28), 4
-  show $d, "#shift#{i}", f
+  $d.find("#shift#{i}").find(".one, .two").fadeIn(show.default_t / 2, f)
 
-display_des_pc2 = (i, $d, res, callback) ->
+display_des_pc2s = ($d, res, callback) ->
   return
 

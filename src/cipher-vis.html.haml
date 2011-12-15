@@ -35,7 +35,9 @@
 				.row
 					%span#ciphertext-label Ciphertext
 					%span#ciphertext
+
 		%ol#display
+
 			%li#binary
 				.spacer
 				.step Convert plaintext to binary
@@ -43,6 +45,7 @@
 					%span.one
 				.code_line
 					%span.two
+
 			%li#ip
 				.spacer
 				.step Initial permutation
@@ -50,17 +53,21 @@
 					%span.one
 				.code_line
 					%span.two
+
 			%li#subkeys
 				.spacer
 				.step Generate subkeys
-				%ol#subkey-list
+
+				%ol#subkey-list{:type => "i"}
+
 					%li#pc1
 						.spacer
-						.step Permuted choice on key
+						.step Permuted choice (1) on key
 						.code_line
 							%span.one
 						.code_line
 							%span.two
+
 					%li#split
 						.spacer
 						.step Split permuted choice in half
@@ -70,163 +77,140 @@
 						.code_line
 							%span.pone
 							%span.ptwo
-					%li#shift1
-						.spacer
-						.step Left shift the key once
-						.code_line
-							%span.one
-							%span.two
-						.code_line
-							%span.pone
-							%span.ptwo
-					%li#shift2
-						.spacer
-						.step Left shift the key once
-						.code_line
-							%span.one
-							%span.two
-						.code_line
-							%span.pone
-							%span.ptwo
-					%li#shift3
-						.spacer
-						.step Left shift the key twice
-						.code_line
-							%span.one
-							%span.two
-						.code_line
-							%span.pone
-							%span.ptwo
-					%li#shift4
-						.spacer
-						.step Left shift the key twice
-						.code_line
-							%span.one
-							%span.two
-						.code_line
-							%span.pone
-							%span.ptwo
-					%li#shift5
-						.spacer
-						.step Left shift the key twice
-						.code_line
-							%span.one
-							%span.two
-						.code_line
-							%span.pone
-							%span.ptwo
-					%li#shift6
-						.spacer
-						.step Left shift the key twice
-						.code_line
-							%span.one
-							%span.two
-						.code_line
-							%span.pone
-							%span.ptwo
-					%li#shift7
-						.spacer
-						.step Left shift the key twice
-						.code_line
-							%span.one
-							%span.two
-						.code_line
-							%span.pone
-							%span.ptwo
-					%li#shift8
-						.spacer
-						.step Left shift the key twice
-						.code_line
-							%span.one
-							%span.two
-						.code_line
-							%span.pone
-							%span.ptwo
-					%li#shift9
-						.spacer
-						.step Left shift the key once
-						.code_line
-							%span.one
-							%span.two
-						.code_line
-							%span.pone
-							%span.ptwo
-					%li#shift10
-						.spacer
-						.step Left shift the key twice
-						.code_line
-							%span.one
-							%span.two
-						.code_line
-							%span.pone
-							%span.ptwo
-					%li#shift11
-						.spacer
-						.step Left shift the key twice
-						.code_line
-							%span.one
-							%span.two
-						.code_line
-							%span.pone
-							%span.ptwo
-						%span.one
-						%span.two
-						%span.pone
-						%span.ptwo
-					%li#shift12
-						.spacer
-						.step Left shift the key twice
-						.code_line
-							%span.one
-							%span.two
-						.code_line
-							%span.pone
-							%span.ptwo
-						%span.one
-						%span.two
-						%span.pone
-						%span.ptwo
-					%li#shift13
-						.spacer
-						.step Left shift the key twice
-						.code_line
-							%span.one
-							%span.two
-						.code_line
-							%span.pone
-							%span.ptwo
-						%span.one
-						%span.two
-						%span.pone
-						%span.ptwo
-					%li#shift14
-						.spacer
-						.step Left shift the key twice
-						.code_line
-							%span.one
-							%span.two
-						.code_line
-							%span.pone
-							%span.ptwo
-					%li#shift15
-						.spacer
-						.step Left shift the key twice
-						.code_line
-							%span.one
-							%span.two
-						.code_line
-							%span.pone
-							%span.ptwo
-					%li#shift16
-						.spacer
-						.step Left shift the key once
-						.code_line
-							%span.one
-							%span.two
-						.code_line
-							%span.pone
-							%span.ptwo
 
+					%li#shifts
+						.spacer
+						.step Repeatedly shift by schedule
+						#shift1
+							.code_line
+								%span.shift 1
+								%span.one
+								%span.two
+							.code_line
+								%span.pone
+								%span.ptwo
+						#shift2
+							.code_line
+								%span.shift 1
+								%span.one
+								%span.two
+							.code_line
+								%span.pone
+								%span.ptwo
+						#shift3
+							.code_line
+								%span.shift 2
+								%span.one
+								%span.two
+							.code_line
+								%span.pone
+								%span.ptwo
+						#shift4
+							.code_line
+								%span.shift 2
+								%span.one
+								%span.two
+							.code_line
+								%span.pone
+								%span.ptwo
+						#shift5
+							.code_line
+								%span.shift 2
+								%span.one
+								%span.two
+							.code_line
+								%span.pone
+								%span.ptwo
+						#shift6
+							.code_line
+								%span.shift 2
+								%span.one
+								%span.two
+							.code_line
+								%span.pone
+								%span.ptwo
+						#shift7
+							.code_line
+								%span.shift 2
+								%span.one
+								%span.two
+							.code_line
+								%span.pone
+								%span.ptwo
+						#shift8
+							.code_line
+								%span.shift 2
+								%span.one
+								%span.two
+							.code_line
+								%span.pone
+								%span.ptwo
+						#shift9
+							.code_line
+								%span.shift 1
+								%span.one
+								%span.two
+							.code_line
+								%span.pone
+								%span.ptwo
+						#shift10
+							.code_line
+								%span.shift 2
+								%span.one
+								%span.two
+							.code_line
+								%span.pone
+								%span.ptwo
+						#shift11
+							.code_line
+								%span.shift 2
+								%span.one
+								%span.two
+							.code_line
+								%span.pone
+								%span.ptwo
+						#shift12
+							.code_line
+								%span.shift 2
+								%span.one
+								%span.two
+							.code_line
+								%span.pone
+								%span.ptwo
+						#shift13
+							.code_line
+								%span.shift 2
+								%span.one
+								%span.two
+							.code_line
+								%span.pone
+								%span.ptwo
+						#shift14
+							.code_line
+								%span.shift 2
+								%span.one
+								%span.two
+							.code_line
+								%span.pone
+								%span.ptwo
+						#shift15
+							.code_line
+								%span.shift 2
+								%span.one
+								%span.two
+							.code_line
+								%span.pone
+								%span.ptwo
+						#shift16
+							.code_line
+								%span.shift 1
+								%span.one
+								%span.two
+							.code_line
+								%span.pone
+								%span.ptwo
 
-
+					%li#pc2
+						.spacer
+						.step Permuted choice (2) on each shift
 
