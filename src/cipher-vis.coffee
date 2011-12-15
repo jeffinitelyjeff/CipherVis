@@ -74,7 +74,7 @@ $(document).ready ->
 # Reveal a step by sliding it up.
 show = ($d, id, callback, t = show.default_t) ->
   $d.find(id).fadeIn(t).children(".spacer").slideUp(t, callback)
-show.default_t = 1000
+show.default_t = 250
 
 # Reveal a step and contained code.
 show_code = ($d, id, callback, t = show.default_t, t2 = show_code.default_t2) ->

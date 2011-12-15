@@ -69,17 +69,22 @@ body
 
 	#shifts
 
-		.shift
-			float: left
-			position: relative
-			top: 5px
-			right: 20px
-
 		.shift_container
 			display: none
 
 			> .code_line
+				float: left
 				display: inline-block
+				position: relative
+
+				> .shift
+					position: absolute
+					left: -40px
+					top: 13px
+
+					color: $three
+					font-size: 20px
+					text-align: right
 
 
 #box
