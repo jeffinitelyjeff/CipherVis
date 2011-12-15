@@ -14,7 +14,7 @@
 	%body
 		#box
 			%h1 Cipher Viz
-			%h2 Block cipher visualizations
+			%h2 DES visualization
 			%form
 				.row
 					%label#key-label{:for => 'key'} Key
@@ -46,85 +46,140 @@
 			%li#ip
 				.spacer
 				.step Initial permutation
-				%span.one
-				%span.two
+				.code_line
+					%span.one
+				.code_line
+					%span.two
 			%li#subkeys
 				.spacer
 				.step Generate subkeys
-				%ol
+				%ol#subkey-list
 					%li#pc1
 						.spacer
 						.step Permuted choice on key
-						%span.one
-						%span.two
+						.code_line
+							%span.one
+						.code_line
+							%span.two
 					%li#split
-						.step Split the key in half
+						.spacer
+						.step Split permuted choice in half
 						%span.one
 						%span.two
+						%span.pc2one
+						%span.pc2two
 					%li#shift1
+						.spacer
 						.step Left shift the key once
-						%span.one
-						%span.two
+						.code_line
+							%span.one
+						.code_line
+							%span.two
 					%li#shift2
+						.spacer
 						.step Left shift the key once
-						%span.one
-						%span.two
+						.code_line
+							%span.one
+						.code_line
+							%span.two
 					%li#shift3
+						.spacer
 						.step Left shift the key twice
-						%span.one
-						%span.two
+						.code_line
+							%span.one
+						.code_line
+							%span.two
 					%li#shift4
+						.spacer
 						.step Left shift the key twice
-						%span.one
-						%span.two
+						.code_line
+							%span.one
+						.code_line
+							%span.two
 					%li#shift5
+						.spacer
 						.step Left shift the key twice
-						%span.one
-						%span.two
+						.code_line
+							%span.one
+						.code_line
+							%span.two
 					%li#shift6
+						.spacer
 						.step Left shift the key twice
-						%span.one
-						%span.two
+						.code_line
+							%span.one
+						.code_line
+							%span.two
 					%li#shift7
+						.spacer
 						.step Left shift the key twice
-						%span.one
-						%span.two
+						.code_line
+							%span.one
+						.code_line
+							%span.two
 					%li#shift8
+						.spacer
 						.step Left shift the key twice
-						%span.one
-						%span.two
+						.code_line
+							%span.one
+						.code_line
+							%span.two
 					%li#shift9
+						.spacer
 						.step Left shift the key once
-						%span.one
-						%span.two
+						.code_line
+							%span.one
+						.code_line
+							%span.two
 					%li#shift10
+						.spacer
 						.step Left shift the key twice
-						%span.one
-						%span.two
+						.code_line
+							%span.one
+						.code_line
+							%span.two
 					%li#shift11
+						.spacer
 						.step Left shift the key twice
-						%span.one
-						%span.two
+						.code_line
+							%span.one
+						.code_line
+							%span.two
 					%li#shift12
+						.spacer
 						.step Left shift the key twice
-						%span.one
-						%span.two
+						.code_line
+							%span.one
+						.code_line
+							%span.two
 					%li#shift13
+						.spacer
 						.step Left shift the key twice
-						%span.one
-						%span.two
+						.code_line
+							%span.one
+						.code_line
+							%span.two
 					%li#shift14
+						.spacer
 						.step Left shift the key twice
-						%span.one
-						%span.two
+						.code_line
+							%span.one
+						.code_line
+							%span.two
 					%li#shift15
+						.spacer
 						.step Left shift the key twice
-						%span.one
-						%span.two
+						.code_line
+							%span.one
+						.code_line
+							%span.two
 					%li#shift16
+						.spacer
 						.step Left shift the key once
-						%span.one
-						%span.two
+						.code_line
+							%span.one
+						.code_line
+							%span.two
 
 
 

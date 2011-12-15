@@ -70,11 +70,12 @@ $(document).ready ->
     $("#plaintext").val("0123456789ABCDEF")
 
 show = ($d, id, callback) ->
-  t = 1000
+  t = show.t
   $d.find(id).fadeIn(t).children(".step").fadeIn(t)
     .end().children(".spacer").slideUp(t, ->
       $d.find(id).find(".code_line").fadeIn(t / 2, callback)
     )
+show.t = 1000
 
 insert = ($d, id, cl, text, num) ->
   if root.utils.is_string(text)
@@ -83,8 +84,7 @@ insert = ($d, id, cl, text, num) ->
   spans = _.map(words, (word) ->
     $("<span></span>").addClass("word").text(word).get(0)
   )
-  log spans
-  $d.find(id).find(cl).append(spans)
+  $d.find(id).find(cl).empty().append(spans)
   $(spans).show()
 
 display_des = ($d, res, callback) ->
@@ -96,12 +96,24 @@ display_des_binary = ($d, res, callback) ->
   show $d, "#binary", -> display_des_ip($d, res, callback)
 
 display_des_ip = ($d, res, callback) ->
-  show($d, "#ip", -> display_des_subkeys($d, res, callback))
+  insert $d, "#ip", ".one", res.p, 4
+  insert $d, "#ip", ".two", res.ip, 4
+  show $d, "#ip", -> display_des_subkeys($d, res, callback)
 
 display_des_subkeys = ($d, res, callback) ->
-  show($d, "#subkeys", -> display_des_pc1($d, res, callback))
+  t = show.t
+  $d.find("#subkeys").fadeIn(t).children(".step").fadeIn(t)
+    .end().children(".spacer").slideUp(1000, ->
+      display_des_pc1($d, res, callback)
+    )
 
 display_des_pc1 = ($d, res, callback) ->
-  show($d, "#subkeys", -> return)
+  insert $d, "#pc1", ".one", res.k, 4
+  insert $d, "#pc1", ".two", res.k_pc1, 4
+  $("#subkey-list").show()
+  show($d, "#pc1", -> display_des_split($d, res, callback))
 
-
+display_des_split = ($d, res, callback) ->
+  insert $d, "#split", ".one", res.cd[0].slice(0, 28), 4
+  insert $d, "#split", ".two", res.cd[0].slice(28), 4
+  show($d, "#split", -> return)
