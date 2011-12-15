@@ -73,8 +73,7 @@ $(document).ready ->
 
 # Reveal a step by sliding it up.
 show = ($d, id, callback, t = show.default_t) ->
-  $d.find(id).fadeIn(t).children(".step").fadeIn(t).end()
-    .children(".spacer").slideUp(t, callback)
+  $d.find(id).fadeIn(t).children(".spacer").slideUp(t, callback)
 show.default_t = 1000
 
 # Reveal a step and contained code.
@@ -100,49 +99,62 @@ insert = ($d, id, cl, text, num) ->
 ## Display steps ##
 
 display_des = ($d, res, callback) ->
-  display_des_binary($d, res, callback)
+  populate_data($d, res)
+  show_binary($d, res, callback)
 
-display_des_binary = ($d, res, callback) ->
+populate_data = ($d, res) ->
   insert $d, "#binary", ".one", res.p_hex, 1
   insert $d, "#binary", ".two", res.p, 4
-  show_code $d, "#binary", -> display_des_ip($d, res, callback)
 
-display_des_ip = ($d, res, callback) ->
   insert $d, "#ip", ".one", res.p, 4
   insert $d, "#ip", ".two", res.ip, 4
-  show_code $d, "#ip", -> display_des_subkeys($d, res, callback)
 
-display_des_subkeys = ($d, res, callback) ->
-  show $d, "#subkeys", -> display_des_pc1($d, res, callback)
-
-display_des_pc1 = ($d, res, callback) ->
   insert $d, "#pc1", ".one", res.k, 4
   insert $d, "#pc1", ".two", res.k_pc1, 4
-  $("#subkey-list").show()
-  show_code $d, "#pc1", -> display_des_split($d, res, callback)
 
-display_des_split = ($d, res, callback) ->
   insert $d, "#split", ".one", res.cd[0].slice(0, 28), 4
   insert $d, "#split", ".two", res.cd[0].slice(28), 4
-  show_code $d, "#split", -> display_des_shifts($d, res, callback)
 
-display_des_shifts = ($d, res, callback) ->
-  show $d, "#shifts", -> display_des_shift(1, $d, res, callback)
+  _.times(16, (i) ->
+    insert $d, "#shift#{i+1}", ".one", res.cd[i+1].slice(0, 28), 4
+    insert $d, "#shift#{i+1}", ".two", res.cd[i+1].slice(28), 4
+  )
 
-display_des_shift = (i, $d, res, callback) ->
+
+
+show_binary = ($d, res, callback) ->
+  show_code $d, "#binary", -> show_ip($d, res, callback)
+
+show_ip = ($d, res, callback) ->
+  show_code $d, "#ip", -> show_subkeys($d, res, callback)
+
+show_subkeys = ($d, res, callback) ->
+  show $d, "#subkeys", -> show_pc1($d, res, callback)
+
+show_pc1 = ($d, res, callback) ->
+  $("#subkey-list").show()
+  show_code $d, "#pc1", -> show_split($d, res, callback)
+
+show_split = ($d, res, callback) ->
+  show_code $d, "#split", -> show_shifts($d, res, callback)
+
+show_shifts = ($d, res, callback) ->
+  show $d, "#shifts", -> show_shift(1, $d, res, callback)
+
+show_shift = (i, $d, res, callback) ->
   if i == 16
     f = ->
-      display_des_pc2s($d, res, callback)
+      show_pc2s($d, res, callback)
       callback()
   else
     f = ->
-      display_des_shift(i+1, $d, res, callback)
+      show_shift(i+1, $d, res, callback)
       callback()
 
-  insert $d, "#shift#{i}", ".one", res.cd[i].slice(0, 28), 4
-  insert $d, "#shift#{i}", ".two", res.cd[i].slice(28), 4
-  $d.find("#shift#{i}").find(".one, .two").fadeIn(show.default_t / 2, f)
+  t = show.default_t / 2
 
-display_des_pc2s = ($d, res, callback) ->
+  $d.find("#shift#{i}").fadeIn(t, f)
+
+show_pc2s = ($d, res, callback) ->
   return
 
