@@ -70,15 +70,30 @@ $(document).ready ->
     $("#plaintext").val("0123456789ABCDEF")
 
 show = ($d, id, callback) ->
-  t = 500
-  $d.find(id).fadeIn(t).children(".step").fadeIn(t).end()
-    .children(".spacer").slideUp(t, callback)
+  t = 1000
+  $d.find(id).fadeIn(t).children(".step").fadeIn(t)
+    .end().children(".spacer").slideUp(t, ->
+      $d.find(id).find(".code_line").fadeIn(t / 2, callback)
+    )
+
+insert = ($d, id, cl, text, num) ->
+  if root.utils.is_string(text)
+    text = text.split('')
+  words = text.print(num).split(' ')
+  spans = _.map(words, (word) ->
+    $("<span></span>").addClass("word").text(word).get(0)
+  )
+  log spans
+  $d.find(id).find(cl).append(spans)
+  $(spans).show()
 
 display_des = ($d, res, callback) ->
   display_des_binary($d, res, callback)
 
 display_des_binary = ($d, res, callback) ->
-  show($d, "#binary", -> display_des_ip($d, res, callback))
+  insert $d, "#binary", ".one", res.p_hex, 1
+  insert $d, "#binary", ".two", res.p, 4
+  show $d, "#binary", -> display_des_ip($d, res, callback)
 
 display_des_ip = ($d, res, callback) ->
   show($d, "#ip", -> display_des_subkeys($d, res, callback))
