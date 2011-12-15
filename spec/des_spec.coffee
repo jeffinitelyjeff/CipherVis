@@ -183,6 +183,39 @@ describe "Rounds", ->
         expect(lookup_s_box(6, as[6])).toEqual bs[6]
         expect(lookup_s_box(7, as[7])).toEqual bs[7]
 
+      describe "another example", ->
+
+        # Example from http://people.eku.edu/styere/Encrypt/JS-DES.html
+
+        bs = _.map("111010 110110 110110 100111 100011 100011 110000 111110".split(' '), (s) -> s.to_int_a())
+        ss = _.map("1010 0110 1100 0110 1000 0011 1010 1000".split(' '), (s) -> s.to_int_a())
+
+        box = root.lookup_s_box
+
+        it "should get the 1st sbox", -> expect(box(0, bs[0])).toEqual ss[0]
+        it "should get the 2nd sbox", -> expect(box(1, bs[1])).toEqual ss[1]
+        it "should get the 3rd sbox", -> expect(box(2, bs[2])).toEqual ss[2]
+        it "should get the 4th sbox", -> expect(box(3, bs[3])).toEqual ss[3]
+        it "should get the 5th sbox", -> expect(box(4, bs[4])).toEqual ss[4]
+        it "should get the 6th sbox", -> expect(box(5, bs[5])).toEqual ss[5]
+
+      describe "another example", ->
+
+        # Example from http://people.eku.edu/styere/Encrypt/JS-DES.html
+        #
+        bs = _.map("100011 100010 011101 110010 001111 011010 001110 110010".split(' '), (s) -> s.to_int_a())
+        ss = _.map("1100 1110 1111 0001 0001 0111 1101 0110".split(' '), (s) -> s.to_int_a())
+
+        box = root.lookup_s_box
+
+        it "should get the 1st sbox", -> expect(box(0, bs[0])).toEqual ss[0]
+        it "should get the 2nd sbox", -> expect(box(1, bs[1])).toEqual ss[1]
+        it "should get the 3rd sbox", -> expect(box(2, bs[2])).toEqual ss[2]
+        it "should get the 4th sbox", -> expect(box(3, bs[3])).toEqual ss[3]
+        it "should get the 5th sbox", -> expect(box(4, bs[4])).toEqual ss[4]
+        it "should get the 6th sbox", -> expect(box(5, bs[5])).toEqual ss[5]
+
+
     it "should work for this example", ->
 
       # Example from http://orlingrabbe.com/des.htm
@@ -379,12 +412,12 @@ describe "Intermediary Results", ->
         "101011 110111 111110 101100 000010 100111 111110 101110",
         "001111 111000 000110 100010 100100 001010 101101 010000"
       ], (s) -> s.clean())
-      console.log r.es
       expect(r.es.length).toEqual es.length
       _.times(es.length, (i) -> expect(r.es[i]).toEqual es[i])
 
     it "should get the subkey mixes right", ->
       mixes = _.map([
+        "101000 111111 010010 111001 001010 100111 000010 110000",
         "111010 110110 110110 100111 100011 100011 110000 111110",
         "100011 100010 011101 110010 001111 011010 001110 110010",
         "000110 010001 001010 100110 010101 000101 110010 100000",
@@ -468,11 +501,12 @@ describe "Intermediary Results", ->
         "01011011 11110110 00010011 11110111",
         "01111100 00110001 00100101 01101000"
       ], (s) -> s.clean())
-      expect(r.lefts.length).toEqual lefts.length
+      expect(r.l.length).toEqual lefts.length
       _.times(lefts.length, (i) -> expect(r.l[i]).toEqual lefts[i])
 
     it "should get the right rounds right", ->
       rights = _.map([
+        "11111111 10011010 11111111 11111111",
         "01110010 00001011 11010101 01111001",
         "10110110 01111011 11001000 11101110",
         "10010100 10110000 01110100 01000100",
@@ -490,7 +524,7 @@ describe "Intermediary Results", ->
         "01111100 00110001 00100101 01101000",
         "10111011 10100000 00001001 10011010"
       ], (s) -> s.clean())
-      expect(r.rights.length).toEqual rights.length
+      expect(r.r.length).toEqual rights.length
       _.times(rights.length, (i) -> expect(r.r[i]).toEqual rights[i])
 
     it "should get the final round right", ->
@@ -502,7 +536,7 @@ describe "Intermediary Results", ->
       expect(r.c).toEqual c
 
     it "should get the final cipher hex right", ->
-      c_hex = "6C4188C7E1fA8251"
+      c_hex = "6C4188C7E1FA8251"
       expect(r.c_hex).toEqual c_hex
 
 
