@@ -21,6 +21,20 @@ $input-height: 42px
 	-webkit-box-shadow: inset 0 0 $b $c
 	box-shadow: inset 0 0 2px $b $c
 
+@mixin flip-horiz
+	-moz-transform: scaleX(-1)
+	-webkit-transform: scaleX(-1)
+	-o-transform: scaleX(-1)
+	transform: scaleX(-1)
+	filter: fliph /*IE*/
+
+@mixin flip-vert
+	-moz-transform: scaleY(-1)
+	-webkit-transform: scaleY(-1)
+	-o-transform: scaleY(-1)
+	transform: scaleY(-1)
+	filter: flipv /*IE*/
+
 .hide
 	display: none
 
@@ -49,7 +63,7 @@ body
 		height: 500px
 		display: block
 
-	.one, .two
+	.one, .two, .pc2
 		display: inline-block
 		padding: 3px
 		border: 1px solid $five
@@ -73,9 +87,9 @@ body
 			display: none
 
 			> .code_line
-				float: left
-				display: inline-block
+				display: block
 				position: relative
+				text-align: center
 
 				> .shift
 					position: absolute
@@ -85,6 +99,16 @@ body
 					color: $three
 					font-size: 20px
 					text-align: right
+
+				> .pc2_label
+					color: $three
+					font-size: 20px
+					@include flip-horiz
+					display: inline-block
+
+					position: absolute
+					left: 35px
+					top: -3px
 
 
 #box

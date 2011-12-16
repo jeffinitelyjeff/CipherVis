@@ -118,9 +118,8 @@ populate_data = ($d, res) ->
   _.times(16, (i) ->
     insert $d, "#shift#{i+1}", ".one", res.cd[i+1].slice(0, 28), 4
     insert $d, "#shift#{i+1}", ".two", res.cd[i+1].slice(28), 4
+    insert $d, "#shift#{i+1}", ".pc2", res.ks[i], 4
   )
-
-
 
 show_binary = ($d, res, callback) ->
   show_code $d, "#binary", -> show_ip($d, res, callback)
@@ -144,7 +143,7 @@ show_shifts = ($d, res, callback) ->
 show_shift = (i, $d, res, callback) ->
   if i == 16
     f = ->
-      show_pc2s($d, res, callback)
+      # FIXME: call next function
       callback()
   else
     f = ->
@@ -155,6 +154,4 @@ show_shift = (i, $d, res, callback) ->
 
   $d.find("#shift#{i}").fadeIn(t, f)
 
-show_pc2s = ($d, res, callback) ->
-  return
 
