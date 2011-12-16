@@ -131,6 +131,16 @@ populate_data = ($d, res) ->
     insert $d, "#round#{i+1}", ".two", res.r[i+1], 4
   )
 
+  insert $d, "#reverse", ".one", res.l.peek(), 4
+  insert $d, "#reverse", ".two", res.r.peek(), 4
+  insert $d, "#reverse", ".three", res.rounded, 4
+
+  insert $d, "#ipinv", ".one", res.rounded, 4
+  insert $d, "#ipinv", ".two", res.c, 4
+
+  insert $d, "#hex", ".one", res.c, 4
+  insert $d, "#hex", ".two", res.c_hex, 1
+
 show_binary = ($d, res, callback) ->
   show_code $d, "#binary", -> show_ip($d, res, callback)
 
@@ -170,10 +180,19 @@ show_rounds = ($d, res, callback) ->
 
 show_round = (i, $d, res, callback) ->
   if i == 16
-    f = -> return # FIXME: next step
+    f = -> show_reverse($d, res, callback)
   else
     f = -> show_round(i+1, $d, res, callback)
 
   t = show.default_t
 
   $d.find("#round#{i}").fadeIn(t / 2, f)
+
+show_reverse = ($d, res, callback) ->
+  show_code $d, "#reverse", -> show_ipinv($d, res, callback)
+
+show_ipinv = ($d, res, callback) ->
+  show_code $d, "#ipinv", -> show_hex($d, res, callback)
+
+show_hex = ($d, res, callback) ->
+  show_code $d, "#hex", -> return
