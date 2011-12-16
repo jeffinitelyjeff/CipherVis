@@ -35,6 +35,12 @@ $input-height: 42px
 	transform: scaleY(-1)
 	filter: flipv /*IE*/
 
+@mixin scale($y)
+	-moz-transform: scaleY($y)
+	-webkit-transform: scaleY($y)
+	-o-transform: scaleY($y)
+	transform: scaleY($y)
+
 .hide
 	display: none
 
@@ -47,6 +53,7 @@ body
 #display
 	position: absolute
 	left: $box-width + 100px
+	padding-bottom: 50px
 	color: $one
 	font:
 		family: 'Nobile'
@@ -91,14 +98,37 @@ body
 				position: relative
 				text-align: center
 
-				> .shift
+				> .shift-line
 					position: absolute
-					left: -40px
+					left: -46px
+					@include scale(3)
+
+					color: $three
+					font-size: 20px
+					top: -18px
+
+				> .shift-arrow
+					@include flip-horiz
+					position: absolute
+					left: -46px
+					top: 13px
+
+					color: $three
+					font-size: 20px
+
+				> .shift-label
+					position: absolute
+					left: -20px
 					top: 13px
 
 					color: $three
 					font-size: 20px
 					text-align: right
+
+			> .pc2_container
+				display: none
+				position: relative
+				text-align: center
 
 				> .pc2_label
 					color: $three
@@ -107,8 +137,16 @@ body
 					display: inline-block
 
 					position: absolute
-					left: 35px
+					left: 23px
 					top: -3px
+
+				> .ks_label
+					color: $three
+					font-size: 15px
+
+					position: absolute
+					left: 45px
+
 
 
 #box
