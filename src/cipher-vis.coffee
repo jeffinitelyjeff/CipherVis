@@ -73,6 +73,10 @@ $(document).ready ->
 
 ## Display helpers ##
 
+scroll_to = (elem, t = scroll_to.default_t) ->
+  $("html, body").animate({ scrollTop: $(elem).offset().top }, t)
+scroll.default_t = show.default_t / 3
+
 # Reveal a step by sliding it up.
 show = ($d, id, callback, t = show.default_t) ->
   $d.find(id).fadeIn(t).children(".spacer").slideUp(t, callback)
@@ -98,12 +102,8 @@ insert = ($d, id, cl, text, num) ->
   $d.find(id).find(cl).empty().append(spans)
   $(spans).show()
 
-## Display steps ##
-
-display_des = ($d, res, callback) ->
-  populate_data($d, res)
-  show_binary($d, res, callback)
-
+# Fill the DOM with the data. This can all be done in advance, while the
+# elements are still hidden.
 populate_data = ($d, res) ->
   insert $d, "#binary", ".one", res.p_hex, 1
   insert $d, "#binary", ".two", res.p, 4
@@ -140,6 +140,12 @@ populate_data = ($d, res) ->
 
   insert $d, "#hex", ".one", res.c, 4
   insert $d, "#hex", ".two", res.c_hex, 1
+
+## Display steps ##
+
+display_des = ($d, res, callback) ->
+  populate_data($d, res)
+  show_binary($d, res, callback)
 
 show_binary = ($d, res, callback) ->
   show_code $d, "#binary", -> show_ip($d, res, callback)
