@@ -16,6 +16,11 @@ $input-height: 42px
 	-webkit-box-shadow: $x $y $b $c, $x $y2 $b $c, $x2 $y $b $c, $x2 $y2 $b $c
 	box-shadow: $x $y $b $c, $x $y2 $b $c, $x2 $y $b $c, $x2 $y2 $b $c
 
+@mixin shadow($x, $y, $b, $c)
+	-moz-box-shadow: $x $y $b $c
+	-webkit-box-shadow: $x $y $b $c
+	box-shadow: $x $y $b $c
+
 @mixin inner-shadow($b, $c)
 	-moz-box-shadow: inset 0 0 $b $c
 	-webkit-box-shadow: inset 0 0 $b $c
@@ -87,6 +92,22 @@ body
 
 		.word
 			margin-left: 3px
+
+	#rounds
+
+		.lformula, .rformula
+			display: inline-block
+			width: 288px
+			font-size: 18px
+			text-align: center
+
+		> .round_container
+			display: none
+
+			> .code_line
+				display: block
+
+
 
 	#shifts
 

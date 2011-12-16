@@ -1,5 +1,7 @@
 root = exports ? this
 
+DEFAULT_T = 1000
+
 log = root.utils.log
 _.each(root.str, (f, name) -> String.prototype[name] = f)
 _.each(root.arr, (f, name) -> Array.prototype[name] = f)
@@ -74,7 +76,7 @@ $(document).ready ->
 # Reveal a step by sliding it up.
 show = ($d, id, callback, t = show.default_t) ->
   $d.find(id).fadeIn(t).children(".spacer").slideUp(t, callback)
-show.default_t = 500
+show.default_t = DEFAULT_T
 
 # Reveal a step and contained code.
 show_code = ($d, id, callback, t = show.default_t, t2 = show_code.default_t2) ->
@@ -112,13 +114,21 @@ populate_data = ($d, res) ->
   insert $d, "#pc1", ".one", res.k, 4
   insert $d, "#pc1", ".two", res.k_pc1, 4
 
-  insert $d, "#split", ".one", res.cd[0].slice(0, 28), 4
-  insert $d, "#split", ".two", res.cd[0].slice(28), 4
+  insert $d, "#split-key", ".one", res.cd[0].slice(0, 28), 4
+  insert $d, "#split-key", ".two", res.cd[0].slice(28), 4
 
   _.times(16, (i) ->
     insert $d, "#shift#{i+1}", ".one", res.cd[i+1].slice(0, 28), 4
     insert $d, "#shift#{i+1}", ".two", res.cd[i+1].slice(28), 4
     insert $d, "#shift#{i+1}", ".pc2", res.ks[i], 4
+  )
+
+  insert $d, "#split", ".one", res.l[0], 4
+  insert $d, "#split", ".two", res.r[0], 4
+
+  _.times(16, (i) ->
+    insert $d, "#round#{i+1}", ".one", res.l[i+1], 4
+    insert $d, "#round#{i+1}", ".two", res.r[i+1], 4
   )
 
 show_binary = ($d, res, callback) ->
@@ -132,28 +142,38 @@ show_subkeys = ($d, res, callback) ->
 
 show_pc1 = ($d, res, callback) ->
   $("#subkey-list").show()
-  show_code $d, "#pc1", -> show_split($d, res, callback)
+  show_code $d, "#pc1", -> show_split_key($d, res, callback)
 
-show_split = ($d, res, callback) ->
-  show_code $d, "#split", -> show_shifts($d, res, callback)
+show_split_key = ($d, res, callback) ->
+  show_code $d, "#split-key", -> show_shifts($d, res, callback)
 
 show_shifts = ($d, res, callback) ->
   show $d, "#shifts", -> show_shift(1, $d, res, callback)
 
 show_shift = (i, $d, res, callback) ->
   if i == 16
-    f = ->
-      # FIXME: call next function
-      callback()
+    f = -> show_split($d, res, callback)
   else
-    f = ->
-      show_shift(i+1, $d, res, callback)
-      callback()
+    f = -> show_shift(i+1, $d, res, callback)
 
   t = show.default_t
 
-  $d.find("#shift#{i}").fadeIn(t, ->
+  $d.find("#shift#{i}").fadeIn(t / 2, ->
     $d.find("#shift#{i}").children(".pc2_container").slideDown(t / 2, f)
   )
 
+show_split = ($d, res, callback) ->
+  show_code $d, "#split", -> show_rounds($d, res, callback)
 
+show_rounds = ($d, res, callback) ->
+  show $d, "#rounds", -> show_round(1, $d, res, callback)
+
+show_round = (i, $d, res, callback) ->
+  if i == 16
+    f = -> return # FIXME: next step
+  else
+    f = -> show_round(i+1, $d, res, callback)
+
+  t = show.default_t
+
+  $d.find("#round#{i}").fadeIn(t, f)
