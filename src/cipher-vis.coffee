@@ -73,10 +73,6 @@ $(document).ready ->
 
 ## Display helpers ##
 
-scroll_to = (elem, t = scroll_to.default_t) ->
-  $("html, body").animate({ scrollTop: $(elem).offset().top }, t)
-scroll.default_t = show.default_t / 3
-
 # Reveal a step by sliding it up.
 show = ($d, id, callback, t = show.default_t) ->
   $d.find(id).fadeIn(t).children(".spacer").slideUp(t, callback)
@@ -89,6 +85,11 @@ show_code = ($d, id, callback, t = show.default_t, t2 = show_code.default_t2) ->
     callback()
   ), t
 show_code.default_t2 = show.default_t / 2
+
+scroll_to = (elem, callback) ->
+  $("html, body").animate({ scrollTop: $(elem).offset().top },
+    scroll.default_t, callback)
+scroll.default_t = show.default_t
 
 # Handles placing text in code boxes such that it's spaced properly (does this
 # by actually inserting several spans).
@@ -145,23 +146,33 @@ populate_data = ($d, res) ->
 
 display_des = ($d, res, callback) ->
   populate_data($d, res)
+  $("#html, body").scrollTop(0)
   show_binary($d, res, callback)
 
 show_binary = ($d, res, callback) ->
-  show_code $d, "#binary", -> show_ip($d, res, callback)
+  show_code $d, "#binary", ->
+    scroll_to "#binary", ->
+      show_ip($d, res, callback)
 
 show_ip = ($d, res, callback) ->
-  show_code $d, "#ip", -> show_subkeys($d, res, callback)
+  show_code $d, "#ip", ->
+    scroll_to "#ip", ->
+      show_subkeys($d, res, callback)
 
 show_subkeys = ($d, res, callback) ->
-  show $d, "#subkeys", -> show_pc1($d, res, callback)
+  show $d, "#subkeys", ->
+    scroll_to "#subkeys", ->
+      show_pc1($d, res, callback)
 
 show_pc1 = ($d, res, callback) ->
   $("#subkey-list").show()
-  show_code $d, "#pc1", -> show_split_key($d, res, callback)
+  show_code $d, "#pc1", ->
+    scroll_to "#pc1", ->
+      show_split_key($d, res, callback)
 
 show_split_key = ($d, res, callback) ->
   show_code $d, "#split-key", -> show_shifts($d, res, callback)
+  scroll_to "#split-key"
 
 show_shifts = ($d, res, callback) ->
   show $d, "#shifts", -> show_shift(1, $d, res, callback)
@@ -177,6 +188,7 @@ show_shift = (i, $d, res, callback) ->
   $d.find("#shift#{i}").fadeIn(t / 2, ->
     $d.find("#shift#{i}").children(".pc2_container").slideDown(t / 4, f)
   )
+  scroll_to "#shift#{i}"
 
 show_split = ($d, res, callback) ->
   show_code $d, "#split", -> show_rounds($d, res, callback)
