@@ -120,7 +120,7 @@ populate_data = ($d, res) ->
   _.times(16, (i) ->
     insert $d, "#shift#{i+1}", ".one", res.cd[i+1].slice(0, 28), 4
     insert $d, "#shift#{i+1}", ".two", res.cd[i+1].slice(28), 4
-    insert $d, "#shift#{i+1}", ".pc2", res.ks[i], 4
+    insert $d, "#shift#{i+1}", ".three", res.ks[i], 4
   )
 
   insert $d, "#split", ".one", res.l[0], 4
@@ -159,7 +159,7 @@ show_shift = (i, $d, res, callback) ->
   t = show.default_t
 
   $d.find("#shift#{i}").fadeIn(t / 2, ->
-    $d.find("#shift#{i}").children(".pc2_container").slideDown(t / 2, f)
+    $d.find("#shift#{i}").children(".pc2_container").slideDown(t / 4, f)
   )
 
 show_split = ($d, res, callback) ->
@@ -176,4 +176,4 @@ show_round = (i, $d, res, callback) ->
 
   t = show.default_t
 
-  $d.find("#round#{i}").fadeIn(t, f)
+  $d.find("#round#{i}").fadeIn(t / 2, f)
