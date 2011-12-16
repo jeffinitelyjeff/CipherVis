@@ -73,10 +73,6 @@ $(document).ready ->
 
 ## Display helpers ##
 
-scroll_to = (elem, t = scroll_to.default_t) ->
-  $("html, body").animate({ scrollTop: $(elem).offset().top }, t)
-scroll.default_t = show.default_t / 3
-
 # Reveal a step by sliding it up.
 show = ($d, id, callback, t = show.default_t) ->
   $d.find(id).fadeIn(t).children(".spacer").slideUp(t, callback)
@@ -89,6 +85,10 @@ show_code = ($d, id, callback, t = show.default_t, t2 = show_code.default_t2) ->
     callback()
   ), t
 show_code.default_t2 = show.default_t / 2
+
+scroll_to = (elem, t = scroll_to.default_t) ->
+  $("html, body").animate({ scrollTop: $(elem).offset().top }, t)
+scroll.default_t = show.default_t / 3
 
 # Handles placing text in code boxes such that it's spaced properly (does this
 # by actually inserting several spans).
